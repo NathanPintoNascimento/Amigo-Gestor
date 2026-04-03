@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primeiro Acesso — Amigo Gestor</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;
+            min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+        .box{background:#0f172a;border:1px solid #1e3a5f;border-radius:16px;
+            padding:36px 32px;width:100%;max-width:400px;}
+        .logo{text-align:center;font-size:22px;font-weight:700;margin-bottom:6px;}
+        .subtitulo{text-align:center;font-size:13px;color:#475569;margin-bottom:6px;}
+        .badge{text-align:center;margin-bottom:28px;}
+        .badge span{background:#1e3a5f;color:#93c5fd;border-radius:20px;
+            padding:4px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;}
+        .grupo{margin-bottom:16px;}
+        label{display:block;font-size:12px;font-weight:600;color:#64748b;
+            text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+        input{width:100%;background:#0a0f1e;border:1px solid #1e293b;border-radius:8px;
+            color:#e2e8f0;font-size:14px;padding:11px 14px;transition:border-color .15s;
+            outline:none;font-family:inherit;}
+        input:focus{border-color:#2d5a9e;}
+        input::placeholder{color:#334155;}
+        .hint{font-size:11px;color:#334155;margin-top:5px;}
+        .btn{width:100%;padding:12px;background:#1e3a5f;color:#93c5fd;
+            border:1px solid #2d5a9e;border-radius:9px;font-size:14px;font-weight:700;
+            cursor:pointer;transition:all .15s;margin-top:8px;font-family:inherit;}
+        .btn:hover{background:#1e40af;color:white;}
+        .erro{background:#450a0a;color:#fca5a5;border:1px solid #7f1d1d;
+            border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:18px;}
+        .divisor{border:none;border-top:1px solid #1e293b;margin:20px 0;}
+        .aviso{background:#0d1f3c;border:1px solid #1e3a5f;border-radius:8px;
+            padding:12px 14px;font-size:12px;color:#64748b;margin-bottom:20px;line-height:1.6;}
+        .aviso strong{color:#93c5fd;}
+    
+        /* ── MOBILE RESPONSIVO ── */
+        @media (max-width: 640px) {
+            body { overflow-x: hidden; padding: 16px 14px !important; }
+            h1 { font-size: 18px !important; }
+
+            /* Nav / topo */
+            .nav, .topo { flex-wrap: wrap; gap: 8px; }
+            .topo-acoes { flex-wrap: wrap; }
+            .brand { font-size: 16px !important; }
+
+            /* Header cards */
+            .header { padding: 16px 18px !important; flex-direction: column; align-items: flex-start !important; }
+            .header h1 { font-size: 20px !important; }
+            .header-btns { width: 100%; }
+            .header-btns .btn, .header-btns a { flex: 1; justify-content: center; font-size: 12px !important; padding: 8px 10px !important; }
+
+            /* Grids viram coluna única */
+            .grid-3, .grid-2, .kpi-grid { grid-template-columns: 1fr !important; }
+            .check-cols { grid-template-columns: 1fr !important; }
+            .metricas-grid { grid-template-columns: 1fr 1fr !important; }
+
+            /* Tabelas — scroll horizontal */
+            .table-wrap, table { overflow-x: auto; display: block; -webkit-overflow-scrolling: touch; }
+            table { min-width: 480px; }
+
+            /* Formulários */
+            .card, .box { padding: 20px 16px !important; }
+            .layout { grid-template-columns: 1fr !important; }
+
+            /* Botões de ação empilham */
+            .acoes { flex-wrap: wrap; gap: 6px; }
+            .acoes .btn-ver { flex: 1; text-align: center; }
+
+            /* Semana bar */
+            .semana-bar { flex-direction: column; align-items: flex-start !important; gap: 8px !important; }
+            .semana-bar select { width: 100%; }
+            .status-badge { margin-left: 0 !important; }
+
+            /* Período bar relatório */
+            .periodo-bar { flex-wrap: wrap; gap: 8px; }
+
+            /* Calendário */
+            .cal-wrap { padding: 12px !important; }
+            .fc .fc-toolbar { flex-direction: column; gap: 8px; }
+            .fc .fc-toolbar-title { font-size: 14px !important; }
+
+            /* Checklist */
+            .checklist-card { padding: 16px !important; }
+
+            /* IA card */
+            .ia-card { padding: 16px !important; }
+            .ia-tabs { gap: 6px; }
+            .ia-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Hist tabs */
+            .hist-tabs { gap: 6px; }
+            .hist-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Ganchos grid */
+            .ganchos-grid { grid-template-columns: 1fr !important; }
+            .stats-row { flex-direction: column; }
+
+            /* Filtros */
+            .filtros { gap: 6px; }
+            .filtro-btn { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Login/cadastro/setup */
+            .box { max-width: 100% !important; }
+
+            /* Charts — altura menor no mobile */
+            .chart-wrap { height: 130px !important; }
+
+            /* Modal */
+            .modal { width: 95% !important; padding: 20px !important; }
+
+            /* Painel lateral vira coluna */
+            .painel { order: 2; }
+            .cal-wrap { order: 1; }
+
+            /* Botões de submit full width */
+            .btn-submit, .btn-salvar, .btn-entrar, .btn-cadastrar, .btn { width: 100%; }
+
+            /* Overflow geral */
+            * { max-width: 100%; }
+            pre { white-space: pre-wrap; word-break: break-word; }
+        }
+
+        @media (max-width: 400px) {
+            body { padding: 12px 10px !important; }
+            .met-val { font-size: 15px !important; }
+            .kpi-val { font-size: 20px !important; }
+            thead th { font-size: 9px !important; padding: 7px 8px !important; }
+            td { font-size: 11px !important; padding: 7px 8px !important; }
+        }
+
+        </style>
+</head>
+<body>
+    <div class="box">
+        <div class="logo">📊 Amigo Gestor</div>
+        <div class="subtitulo">Configuração inicial</div>
+        <div class="badge"><span>PRIMEIRO ACESSO</span></div>
+
+        <div class="aviso">
+            <strong>Nenhum usuário encontrado.</strong><br>
+            Crie agora a conta de administrador para acessar o sistema.
+            Esta página só aparece uma vez.
+        </div>
+
+        {% if erro %}
+        <div class="erro">⚠️ {{ erro }}</div>
+        {% endif %}
+
+        <form method="POST" action="/setup">
+            <div class="grupo">
+                <label>Seu nome</label>
+                <input type="text" name="nome" placeholder="Ex: João Silva" required autofocus>
+            </div>
+            <div class="grupo">
+                <label>E-mail</label>
+                <input type="email" name="email" placeholder="voce@email.com" required>
+            </div>
+            <div class="grupo">
+                <label>Senha</label>
+                <input type="password" name="senha" placeholder="Mínimo 6 caracteres" required minlength="6">
+                <div class="hint">Você vai usar essa senha para entrar no sistema.</div>
+            </div>
+            <div class="grupo">
+                <label>Confirmar senha</label>
+                <input type="password" name="senha_confirm" placeholder="Repita a senha" required>
+            </div>
+            <hr class="divisor">
+            <button type="submit" class="btn">Criar conta e entrar →</button>
+        </form>
+    </div>
+</body>
+</html>

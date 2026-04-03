@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ganchos — {{ cliente[1] }}</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;padding:24px;min-height:100vh;}
+        .nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+        .voltar{color:#475569;text-decoration:none;font-size:14px;}
+        .voltar:hover{color:#94a3b8;}
+        .brand{font-size:13px;color:#334155;font-weight:700;letter-spacing:.06em;}
+        .header{background:linear-gradient(135deg,#111827,#1a0a2e);border:1px solid #4c1d95;border-radius:16px;padding:22px 28px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;}
+        .header h1{font-size:22px;font-weight:700;background:linear-gradient(90deg,#e2e8f0,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+        .seg-badge{background:#2e1065;color:#c4b5fd;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;}
+        .header-btns{display:flex;gap:8px;flex-wrap:wrap;}
+        .btn{padding:9px 16px;border-radius:9px;text-decoration:none;font-size:13px;font-weight:600;border:1px solid transparent;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
+        .btn-blue{background:#1e3a5f;color:#93c5fd;border-color:#2d5a9e;}
+        .btn-blue:hover{background:#1e40af;color:white;}
+        .btn-purple{background:#2e1065;color:#c4b5fd;border-color:#4c1d95;}
+        .btn-purple:hover{background:#4c1d95;color:white;}
+
+        /* Layout */
+        .layout{display:grid;grid-template-columns:320px 1fr;gap:16px;}
+        @media(max-width:900px){.layout{grid-template-columns:1fr;}}
+
+        .card{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:20px 22px;}
+        .card-title{font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em;}
+
+        /* Form */
+        .form-label{font-size:12px;color:#64748b;display:block;margin-bottom:4px;margin-top:10px;}
+        .form-label:first-child{margin-top:0;}
+        .form-input{width:100%;padding:9px 12px;background:#0a0f1e;border:1px solid #1e293b;border-radius:8px;color:#e2e8f0;font-size:13px;font-family:inherit;transition:border-color .15s;}
+        .form-input:focus{outline:none;border-color:#4c1d95;}
+        .form-select{width:100%;padding:9px 12px;background:#0a0f1e;border:1px solid #1e293b;border-radius:8px;color:#e2e8f0;font-size:13px;cursor:pointer;}
+        .form-textarea{width:100%;padding:9px 12px;background:#0a0f1e;border:1px solid #1e293b;border-radius:8px;color:#e2e8f0;font-size:13px;font-family:inherit;resize:vertical;min-height:80px;line-height:1.5;transition:border-color .15s;}
+        .form-textarea:focus{outline:none;border-color:#4c1d95;}
+        .btn-submit{width:100%;padding:10px;background:#2e1065;color:#c4b5fd;border:1px solid #4c1d95;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin-top:14px;transition:all .15s;}
+        .btn-submit:hover{background:#4c1d95;color:white;}
+
+        /* Filtros */
+        .filtros{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+        .filtro-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #1e293b;background:transparent;color:#475569;transition:all .15s;}
+        .filtro-btn.ativo{background:#2e1065;color:#c4b5fd;border-color:#4c1d95;}
+
+        /* Grid de ganchos */
+        .ganchos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+        .gancho-card{background:#0a0f1e;border:1px solid #1e293b;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s;}
+        .gancho-card:hover{border-color:#4c1d95;}
+        .gancho-texto{font-size:14px;color:#e2e8f0;line-height:1.6;flex:1;}
+        .gancho-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
+        .gancho-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:20px;background:#1e293b;color:#64748b;}
+        .gancho-ret{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;}
+        .gancho-ret.bom{background:#052e16;color:#4ade80;}
+        .gancho-ret.ok{background:#451a03;color:#fb923c;}
+        .gancho-ret.ruim{background:#450a0a;color:#f87171;}
+        .gancho-acoes{display:flex;gap:6px;align-items:center;}
+        .gancho-data{font-size:11px;color:#334155;}
+        .btn-copiar{padding:4px 10px;background:#1e293b;color:#64748b;border:1px solid #334155;border-radius:6px;font-size:11px;cursor:pointer;transition:all .15s;}
+        .btn-copiar:hover{background:#2e1065;color:#c4b5fd;border-color:#4c1d95;}
+        .btn-excluir{padding:4px 8px;background:transparent;color:#334155;border:none;border-radius:6px;font-size:12px;cursor:pointer;transition:all .15s;}
+        .btn-excluir:hover{background:#450a0a;color:#f87171;}
+        .copiado-tag{font-size:11px;color:#22c55e;display:none;}
+        .copiado-tag.vis{display:inline;}
+        .vazio{color:#334155;font-size:14px;text-align:center;padding:40px 0;grid-column:1/-1;}
+
+        /* Stats */
+        .stats-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+        .stat{background:#0a0f1e;border:1px solid #1e293b;border-radius:10px;padding:10px 14px;flex:1;min-width:80px;}
+        .stat-val{font-size:20px;font-weight:700;color:#c4b5fd;}
+        .stat-label{font-size:11px;color:#475569;margin-top:2px;}
+
+        #loader{position:fixed;inset:0;z-index:9999;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s ease;}
+    
+        /* ── MOBILE RESPONSIVO ── */
+        @media (max-width: 640px) {
+            body { overflow-x: hidden; padding: 16px 14px !important; }
+            h1 { font-size: 18px !important; }
+
+            /* Nav / topo */
+            .nav, .topo { flex-wrap: wrap; gap: 8px; }
+            .topo-acoes { flex-wrap: wrap; }
+            .brand { font-size: 16px !important; }
+
+            /* Header cards */
+            .header { padding: 16px 18px !important; flex-direction: column; align-items: flex-start !important; }
+            .header h1 { font-size: 20px !important; }
+            .header-btns { width: 100%; }
+            .header-btns .btn, .header-btns a { flex: 1; justify-content: center; font-size: 12px !important; padding: 8px 10px !important; }
+
+            /* Grids viram coluna única */
+            .grid-3, .grid-2, .kpi-grid { grid-template-columns: 1fr !important; }
+            .check-cols { grid-template-columns: 1fr !important; }
+            .metricas-grid { grid-template-columns: 1fr 1fr !important; }
+
+            /* Tabelas — scroll horizontal */
+            .table-wrap, table { overflow-x: auto; display: block; -webkit-overflow-scrolling: touch; }
+            table { min-width: 480px; }
+
+            /* Formulários */
+            .card, .box { padding: 20px 16px !important; }
+            .layout { grid-template-columns: 1fr !important; }
+
+            /* Botões de ação empilham */
+            .acoes { flex-wrap: wrap; gap: 6px; }
+            .acoes .btn-ver { flex: 1; text-align: center; }
+
+            /* Semana bar */
+            .semana-bar { flex-direction: column; align-items: flex-start !important; gap: 8px !important; }
+            .semana-bar select { width: 100%; }
+            .status-badge { margin-left: 0 !important; }
+
+            /* Período bar relatório */
+            .periodo-bar { flex-wrap: wrap; gap: 8px; }
+
+            /* Calendário */
+            .cal-wrap { padding: 12px !important; }
+            .fc .fc-toolbar { flex-direction: column; gap: 8px; }
+            .fc .fc-toolbar-title { font-size: 14px !important; }
+
+            /* Checklist */
+            .checklist-card { padding: 16px !important; }
+
+            /* IA card */
+            .ia-card { padding: 16px !important; }
+            .ia-tabs { gap: 6px; }
+            .ia-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Hist tabs */
+            .hist-tabs { gap: 6px; }
+            .hist-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Ganchos grid */
+            .ganchos-grid { grid-template-columns: 1fr !important; }
+            .stats-row { flex-direction: column; }
+
+            /* Filtros */
+            .filtros { gap: 6px; }
+            .filtro-btn { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Login/cadastro/setup */
+            .box { max-width: 100% !important; }
+
+            /* Charts — altura menor no mobile */
+            .chart-wrap { height: 130px !important; }
+
+            /* Modal */
+            .modal { width: 95% !important; padding: 20px !important; }
+
+            /* Painel lateral vira coluna */
+            .painel { order: 2; }
+            .cal-wrap { order: 1; }
+
+            /* Botões de submit full width */
+            .btn-submit, .btn-salvar, .btn-entrar, .btn-cadastrar, .btn { width: 100%; }
+
+            /* Overflow geral */
+            * { max-width: 100%; }
+            pre { white-space: pre-wrap; word-break: break-word; }
+        }
+
+        @media (max-width: 400px) {
+            body { padding: 12px 10px !important; }
+            .met-val { font-size: 15px !important; }
+            .kpi-val { font-size: 20px !important; }
+            thead th { font-size: 9px !important; padding: 7px 8px !important; }
+            td { font-size: 11px !important; padding: 7px 8px !important; }
+        }
+
+        </style>
+</head>
+<body>
+
+<div id="loader">
+    <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">📊</span><span style="font-size:20px;font-weight:700;color:white;">Amigo Gestor</span></div>
+    <div style="width:180px;height:3px;background:#1e293b;border-radius:99px;overflow:hidden;"><div id="loader-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#a78bfa,#ec4899);border-radius:99px;transition:width .5s ease;"></div></div>
+    <span style="font-size:13px;color:#475569;" id="loader-txt">Carregando ganchos...</span>
+</div>
+
+<div class="nav">
+    <a class="voltar" href="/cliente/{{ cliente[0] }}">← Voltar</a>
+    <span class="brand">AMIGO GESTOR</span>
+</div>
+
+<div class="header">
+    <div>
+        <div style="font-size:11px;color:#6d28d9;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Banco de Ganchos</div>
+        <h1>{{ cliente[1] }}</h1>
+        <span class="seg-badge">{{ cliente[2] }}</span>
+    </div>
+    <div class="header-btns">
+        <a class="btn btn-blue" href="/calendario/{{ cliente[0] }}">📅 Calendário</a>
+        <a class="btn btn-blue" href="/review/{{ cliente[0] }}">📋 Review</a>
+    </div>
+</div>
+
+<div class="layout">
+
+    <!-- Painel esquerdo -->
+    <div>
+        <div class="card">
+            <div class="card-title">🪝 Novo Gancho</div>
+            <form action="/ganchos/{{ cliente[0] }}/novo" method="POST">
+                <label class="form-label">Texto do gancho</label>
+                <textarea class="form-textarea" name="texto" placeholder="Ex: Você sabia que 90% das pessoas que tentam X cometem esse erro?" required></textarea>
+
+                <label class="form-label">Categoria</label>
+                <select class="form-select" name="categoria">
+                    <option value="Curiosidade">🤔 Curiosidade</option>
+                    <option value="Dor">😤 Dor / Problema</option>
+                    <option value="Resultado">🏆 Resultado</option>
+                    <option value="Polêmica">🔥 Polêmica</option>
+                    <option value="Tutorial">📖 Tutorial</option>
+                    <option value="Bastidor">🎬 Bastidor</option>
+                    <option value="Prova Social">⭐ Prova Social</option>
+                    <option value="Geral">📌 Geral</option>
+                </select>
+
+                <label class="form-label">Retenção obtida (%) — opcional</label>
+                <input class="form-input" type="number" step="0.1" name="retencao" placeholder="Ex: 42.5">
+
+                <label class="form-label">Data de uso — opcional</label>
+                <input class="form-input" type="date" name="data_uso">
+
+                <button class="btn-submit" type="submit">Salvar gancho</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de ganchos -->
+    <div>
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat">
+                <div class="stat-val">{{ ganchos|length }}</div>
+                <div class="stat-label">Total de ganchos</div>
+            </div>
+            {% set com_ret = ganchos|selectattr('4')|list %}
+            {% if ganchos|length > 0 %}
+            {% set bons = [] %}
+            {% for g in ganchos %}{% if g[4] and g[4]|float >= 40 %}{% set _ = bons.append(g) %}{% endif %}{% endfor %}
+            <div class="stat">
+                <div class="stat-val" style="color:#4ade80;">{{ bons|length }}</div>
+                <div class="stat-label">Retenção ≥ 40%</div>
+            </div>
+            {% endif %}
+            {% set cats = [] %}
+            {% for g in ganchos %}{% if g[3] not in cats %}{% set _ = cats.append(g[3]) %}{% endif %}{% endfor %}
+            <div class="stat">
+                <div class="stat-val">{{ cats|length }}</div>
+                <div class="stat-label">Categorias</div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filtros">
+            <button class="filtro-btn ativo" onclick="filtrar('todos',this)">Todos</button>
+            <button class="filtro-btn" onclick="filtrar('Curiosidade',this)">🤔 Curiosidade</button>
+            <button class="filtro-btn" onclick="filtrar('Dor',this)">😤 Dor</button>
+            <button class="filtro-btn" onclick="filtrar('Resultado',this)">🏆 Resultado</button>
+            <button class="filtro-btn" onclick="filtrar('Polêmica',this)">🔥 Polêmica</button>
+            <button class="filtro-btn" onclick="filtrar('Tutorial',this)">📖 Tutorial</button>
+            <button class="filtro-btn" onclick="filtrar('bom',this)">⭐ Alta retenção</button>
+        </div>
+
+        <!-- Grid -->
+        <div class="ganchos-grid" id="ganchos-grid">
+            {% if ganchos %}
+            {% for g in ganchos %}
+            <div class="gancho-card" data-cat="{{ g[3] }}" data-ret="{{ g[4] or 0 }}">
+                <div class="gancho-texto">{{ g[2] }}</div>
+                <div class="gancho-footer">
+                    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                        <span class="gancho-cat">{{ g[3] }}</span>
+                        {% if g[4] %}
+                        <span class="gancho-ret {% if g[4]|float >= 40 %}bom{% elif g[4]|float >= 25 %}ok{% else %}ruim{% endif %}">{{ g[4] }}% ret.</span>
+                        {% endif %}
+                        {% if g[5] %}<span class="gancho-data">{{ g[5] }}</span>{% endif %}
+                    </div>
+                    <div class="gancho-acoes">
+                        <span class="copiado-tag" id="cop-{{ g[0] }}">✓</span>
+                        <button class="btn-copiar" onclick="copiarGancho('{{ g[2]|replace("'","\\'") }}','{{ g[0] }}')">📋 Copiar</button>
+                        <form action="/ganchos/excluir/{{ g[0] }}" method="POST" onsubmit="return confirm('Excluir este gancho?')" style="display:inline;">
+                            <button class="btn-excluir" type="submit">🗑️</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="vazio">Nenhum gancho cadastrado ainda.<br><span style="font-size:12px;color:#1e293b;">Adicione o primeiro gancho que funcionou bem!</span></div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+(function(){var bar=document.getElementById('loader-bar'),txt=document.getElementById('loader-txt'),loader=document.getElementById('loader'),p=0;var iv=setInterval(function(){p=Math.min(p+Math.random()*18+5,88);bar.style.width=p+'%';},180);window.addEventListener('load',function(){clearInterval(iv);bar.style.width='100%';txt.textContent='Pronto!';setTimeout(function(){loader.style.opacity='0';setTimeout(function(){loader.style.display='none';},400);},200);});})();
+
+function filtrar(cat, btn) {
+    document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('ativo'));
+    btn.classList.add('ativo');
+    document.querySelectorAll('.gancho-card').forEach(function(card) {
+        if(cat === 'todos') { card.style.display=''; return; }
+        if(cat === 'bom') { card.style.display = parseFloat(card.dataset.ret||0) >= 40 ? '' : 'none'; return; }
+        card.style.display = card.dataset.cat === cat ? '' : 'none';
+    });
+}
+
+function copiarGancho(texto, id) {
+    navigator.clipboard.writeText(texto).then(function(){
+        var tag = document.getElementById('cop-'+id);
+        tag.classList.add('vis');
+        setTimeout(function(){ tag.classList.remove('vis'); }, 2000);
+    });
+}
+</script>
+</body>
+</html>

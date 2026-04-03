@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro — Amigo Gestor</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;
+            min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+        .box{background:#0f172a;border:1px solid #1e293b;border-radius:16px;padding:36px 32px;width:100%;max-width:400px;}
+        .logo{text-align:center;font-size:22px;font-weight:700;margin-bottom:6px;}
+        .subtitulo{text-align:center;font-size:13px;color:#475569;margin-bottom:28px;}
+        .grupo{margin-bottom:16px;}
+        label{display:block;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+        input{width:100%;background:#0a0f1e;border:1px solid #1e293b;border-radius:8px;color:#e2e8f0;font-size:14px;padding:11px 14px;transition:border-color .15s;outline:none;font-family:inherit;}
+        input:focus{border-color:#2d5a9e;}
+        input::placeholder{color:#334155;}
+        .hint{font-size:11px;color:#334155;margin-top:5px;}
+        .btn-cadastrar{width:100%;padding:12px;background:#1e3a5f;color:#93c5fd;border:1px solid #2d5a9e;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;margin-top:8px;font-family:inherit;}
+        .btn-cadastrar:hover{background:#1e40af;color:white;}
+        .btn-google{width:100%;padding:11px;background:#fff;color:#1f2937;border:1px solid #d1d5db;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;}
+        .btn-google:hover{background:#f9fafb;}
+        .google-icon{width:18px;height:18px;flex-shrink:0;}
+        .alerta{border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:18px;}
+        .alerta.erro{background:#450a0a;color:#fca5a5;border:1px solid #7f1d1d;}
+        .alerta.ok{background:#052e16;color:#4ade80;border:1px solid #14532d;}
+        .divisor{border:none;border-top:1px solid #1e293b;margin:20px 0;}
+        .divisor-txt{display:flex;align-items:center;gap:12px;margin:18px 0;color:#334155;font-size:12px;}
+        .divisor-txt::before,.divisor-txt::after{content:'';flex:1;border-top:1px solid #1e293b;}
+        .rodape{text-align:center;margin-top:20px;font-size:13px;color:#475569;}
+        .rodape a{color:#93c5fd;text-decoration:none;}
+        .rodape a:hover{text-decoration:underline;}
+    
+        /* ── MOBILE RESPONSIVO ── */
+        @media (max-width: 640px) {
+            body { overflow-x: hidden; padding: 16px 14px !important; }
+            h1 { font-size: 18px !important; }
+
+            /* Nav / topo */
+            .nav, .topo { flex-wrap: wrap; gap: 8px; }
+            .topo-acoes { flex-wrap: wrap; }
+            .brand { font-size: 16px !important; }
+
+            /* Header cards */
+            .header { padding: 16px 18px !important; flex-direction: column; align-items: flex-start !important; }
+            .header h1 { font-size: 20px !important; }
+            .header-btns { width: 100%; }
+            .header-btns .btn, .header-btns a { flex: 1; justify-content: center; font-size: 12px !important; padding: 8px 10px !important; }
+
+            /* Grids viram coluna única */
+            .grid-3, .grid-2, .kpi-grid { grid-template-columns: 1fr !important; }
+            .check-cols { grid-template-columns: 1fr !important; }
+            .metricas-grid { grid-template-columns: 1fr 1fr !important; }
+
+            /* Tabelas — scroll horizontal */
+            .table-wrap, table { overflow-x: auto; display: block; -webkit-overflow-scrolling: touch; }
+            table { min-width: 480px; }
+
+            /* Formulários */
+            .card, .box { padding: 20px 16px !important; }
+            .layout { grid-template-columns: 1fr !important; }
+
+            /* Botões de ação empilham */
+            .acoes { flex-wrap: wrap; gap: 6px; }
+            .acoes .btn-ver { flex: 1; text-align: center; }
+
+            /* Semana bar */
+            .semana-bar { flex-direction: column; align-items: flex-start !important; gap: 8px !important; }
+            .semana-bar select { width: 100%; }
+            .status-badge { margin-left: 0 !important; }
+
+            /* Período bar relatório */
+            .periodo-bar { flex-wrap: wrap; gap: 8px; }
+
+            /* Calendário */
+            .cal-wrap { padding: 12px !important; }
+            .fc .fc-toolbar { flex-direction: column; gap: 8px; }
+            .fc .fc-toolbar-title { font-size: 14px !important; }
+
+            /* Checklist */
+            .checklist-card { padding: 16px !important; }
+
+            /* IA card */
+            .ia-card { padding: 16px !important; }
+            .ia-tabs { gap: 6px; }
+            .ia-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Hist tabs */
+            .hist-tabs { gap: 6px; }
+            .hist-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Ganchos grid */
+            .ganchos-grid { grid-template-columns: 1fr !important; }
+            .stats-row { flex-direction: column; }
+
+            /* Filtros */
+            .filtros { gap: 6px; }
+            .filtro-btn { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Login/cadastro/setup */
+            .box { max-width: 100% !important; }
+
+            /* Charts — altura menor no mobile */
+            .chart-wrap { height: 130px !important; }
+
+            /* Modal */
+            .modal { width: 95% !important; padding: 20px !important; }
+
+            /* Painel lateral vira coluna */
+            .painel { order: 2; }
+            .cal-wrap { order: 1; }
+
+            /* Botões de submit full width */
+            .btn-submit, .btn-salvar, .btn-entrar, .btn-cadastrar, .btn { width: 100%; }
+
+            /* Overflow geral */
+            * { max-width: 100%; }
+            pre { white-space: pre-wrap; word-break: break-word; }
+        }
+
+        @media (max-width: 400px) {
+            body { padding: 12px 10px !important; }
+            .met-val { font-size: 15px !important; }
+            .kpi-val { font-size: 20px !important; }
+            thead th { font-size: 9px !important; padding: 7px 8px !important; }
+            td { font-size: 11px !important; padding: 7px 8px !important; }
+        }
+
+        </style>
+</head>
+<body>
+    <div class="box">
+        <div class="logo">📊 Amigo Gestor</div>
+        <div class="subtitulo">Crie sua conta</div>
+
+        {% if google_enabled %}
+        <a class="btn-google" href="/login/google">
+            <svg class="google-icon" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Cadastrar com Google
+        </a>
+        <div class="divisor-txt">ou preencha o formulário</div>
+        {% endif %}
+
+        {% if erro %}<div class="alerta erro">⚠️ {{ erro }}</div>{% endif %}
+        {% if sucesso %}<div class="alerta ok">✓ {{ sucesso }}</div>{% endif %}
+
+        {% if not sucesso %}
+        <form method="POST" action="/cadastro">
+            <div class="grupo">
+                <label>Seu nome</label>
+                <input type="text" name="nome" placeholder="Ex: João Silva" required autocomplete="name">
+            </div>
+            <div class="grupo">
+                <label>E-mail</label>
+                <input type="email" name="email" placeholder="voce@email.com" required autocomplete="email">
+            </div>
+            <div class="grupo">
+                <label>Senha</label>
+                <input type="password" name="senha" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+                <div class="hint">Use ao menos 6 caracteres.</div>
+            </div>
+            <div class="grupo">
+                <label>Confirmar senha</label>
+                <input type="password" name="senha_confirm" placeholder="Repita a senha" required autocomplete="new-password">
+            </div>
+            <hr class="divisor">
+            <button type="submit" class="btn-cadastrar">Criar conta →</button>
+        </form>
+        {% endif %}
+
+        <div class="rodape">
+            Já tem conta? <a href="/login">Entrar</a>
+        </div>
+    </div>
+</body>
+</html>

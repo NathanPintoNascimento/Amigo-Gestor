@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajuda — Amigo Gestor</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;min-height:100vh;padding:24px;}
+
+        /* nav */
+        .nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+        .voltar{color:#475569;text-decoration:none;font-size:14px;transition:color .15s;}
+        .voltar:hover{color:#94a3b8;}
+        .brand{font-size:13px;color:#334155;font-weight:700;letter-spacing:.06em;}
+
+        /* layout principal */
+        .layout{display:grid;grid-template-columns:300px 1fr;gap:20px;max-width:1100px;margin:0 auto;}
+        @media(max-width:800px){.layout{grid-template-columns:1fr;}}
+
+        /* mascote */
+        .mascote-col{display:flex;flex-direction:column;align-items:center;gap:0;}
+        .mascote-wrap{
+            background:#0f172a;border:1px solid #1e293b;border-radius:20px;
+            padding:28px 24px;display:flex;flex-direction:column;align-items:center;
+            gap:16px;position:sticky;top:24px;
+        }
+        .mascote-svg{width:140px;height:140px;}
+        .mascote-nome{font-size:13px;font-weight:700;color:#93c5fd;letter-spacing:.06em;text-transform:uppercase;}
+        .balao{
+            background:#1e3a5f;border:1px solid #2d5a9e;border-radius:14px;border-bottom-left-radius:4px;
+            padding:14px 16px;font-size:13px;color:#cbd5e1;line-height:1.7;
+            min-height:80px;transition:all .3s ease;
+        }
+        .balao strong{color:#93c5fd;}
+
+        /* barra de progresso */
+        .prog-bar-wrap{width:100%;background:#0a0f1e;border-radius:99px;height:4px;overflow:hidden;margin-top:4px;}
+        .prog-bar-inner{height:100%;background:#3b82f6;border-radius:99px;transition:width .4s ease;}
+        .prog-label{font-size:11px;color:#334155;text-align:right;margin-top:4px;}
+
+        /* botões navegação */
+        .nav-btns{display:flex;gap:8px;width:100%;}
+        .btn-nav{flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid transparent;}
+        .btn-prev{background:#0f172a;color:#475569;border-color:#1e293b;}
+        .btn-prev:hover{color:#94a3b8;border-color:#334155;}
+        .btn-next{background:#1e3a5f;color:#93c5fd;border-color:#2d5a9e;}
+        .btn-next:hover{background:#1e40af;color:white;}
+        .btn-nav:disabled{opacity:.3;cursor:default;}
+
+        /* painel direito — conteúdo da etapa */
+        .conteudo-col{}
+        .etapa-card{
+            background:#0f172a;border:1px solid #1e293b;border-radius:16px;
+            padding:28px 30px;margin-bottom:16px;
+            animation:fadeIn .3s ease;
+        }
+        @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+        .etapa-numero{font-size:11px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+        .etapa-titulo{font-size:20px;font-weight:700;color:#e2e8f0;margin-bottom:14px;line-height:1.3;}
+        .etapa-desc{font-size:14px;color:#94a3b8;line-height:1.8;margin-bottom:20px;}
+        .etapa-desc strong{color:#e2e8f0;}
+
+        /* mini cards de features */
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+        .feat{background:#0a0f1e;border:1px solid #1e293b;border-radius:10px;padding:14px 16px;}
+        .feat-icon{font-size:20px;margin-bottom:8px;display:block;}
+        .feat-titulo{font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:4px;}
+        .feat-desc{font-size:12px;color:#475569;line-height:1.5;}
+
+        /* dica com borda colorida */
+        .dica{border-left:3px solid #3b82f6;background:#0a0f1e;border-radius:0 10px 10px 0;padding:12px 16px;font-size:13px;color:#94a3b8;line-height:1.6;margin-top:16px;}
+        .dica.verde{border-left-color:#22c55e;}
+        .dica.amarelo{border-left-color:#fbbf24;}
+        .dica.roxo{border-left-color:#a78bfa;}
+        .dica strong{color:#e2e8f0;}
+
+        /* menu lateral de etapas */
+        .etapas-menu{display:flex;flex-direction:column;gap:6px;margin-top:16px;width:100%;}
+        .menu-item{
+            display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;
+            cursor:pointer;transition:all .15s;border:1px solid transparent;
+            font-size:12px;color:#475569;
+        }
+        .menu-item:hover{background:#111827;color:#94a3b8;}
+        .menu-item.ativo{background:#1e3a5f;color:#93c5fd;border-color:#2d5a9e;}
+        .menu-dot{width:8px;height:8px;border-radius:50%;background:#334155;flex-shrink:0;transition:background .15s;}
+        .menu-item.ativo .menu-dot{background:#3b82f6;}
+        .menu-item.feito .menu-dot{background:#22c55e;}
+        .menu-item.feito{color:#64748b;}
+
+        /* badge "feito" */
+        .check-badge{display:none;font-size:11px;color:#22c55e;margin-left:auto;}
+        .menu-item.feito .check-badge{display:block;}
+
+        /* tela final */
+        .final-wrap{text-align:center;padding:32px 24px;}
+        .final-icon{font-size:48px;margin-bottom:16px;display:block;}
+        .final-titulo{font-size:22px;font-weight:700;color:#e2e8f0;margin-bottom:10px;}
+        .final-desc{font-size:14px;color:#64748b;line-height:1.7;margin-bottom:24px;}
+        .btn-comecar{
+            display:inline-flex;align-items:center;gap:8px;
+            padding:13px 28px;background:#1e3a5f;color:#93c5fd;
+            border:1px solid #2d5a9e;border-radius:10px;
+            font-size:14px;font-weight:700;text-decoration:none;
+            transition:all .15s;cursor:pointer;
+        }
+        .btn-comecar:hover{background:#1e40af;color:white;}
+
+        /* animação olhos mascote */
+        @keyframes piscar{0%,90%,100%{transform:scaleY(1);}95%{transform:scaleY(0.08);}}
+        .olho{animation:piscar 4s infinite;}
+        .olho-dir{animation-delay:0.08s;}
+        @keyframes flutuar{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+        .mascote-svg{animation:flutuar 3s ease-in-out infinite;}
+        @keyframes falar{0%,100%{transform:scaleY(1);}50%{transform:scaleY(1.3);}}
+        .boca.falando{animation:falar .4s ease infinite;}
+    </style>
+</head>
+<body>
+
+<div class="nav">
+    <a class="voltar" href="/">← Voltar ao início</a>
+    <span class="brand">AMIGO GESTOR</span>
+</div>
+
+<div class="layout">
+
+    <!-- COLUNA ESQUERDA: Mascote -->
+    <div class="mascote-col">
+        <div class="mascote-wrap">
+            <span class="mascote-nome">Agi, seu guia</span>
+
+            <!-- Mascote SVG -->
+            <svg class="mascote-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                <!-- Corpo -->
+                <ellipse cx="70" cy="85" rx="38" ry="32" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5"/>
+                <!-- Braços -->
+                <ellipse cx="28" cy="88" rx="10" ry="6" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5" transform="rotate(-20 28 88)"/>
+                <ellipse cx="112" cy="88" rx="10" ry="6" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5" transform="rotate(20 112 88)"/>
+                <!-- Detalhes tela/tablet no corpo -->
+                <rect x="50" y="78" width="40" height="26" rx="4" fill="#0d1f3c" stroke="#3b82f6" stroke-width="1"/>
+                <rect x="54" y="82" width="14" height="8" rx="2" fill="#1e40af" opacity=".7"/>
+                <rect x="72" y="82" width="14" height="3" rx="1" fill="#334155"/>
+                <rect x="72" y="87" width="10" height="3" rx="1" fill="#334155"/>
+                <rect x="54" y="93" width="32" height="3" rx="1" fill="#22c55e" opacity=".5"/>
+                <!-- Cabeça -->
+                <circle cx="70" cy="52" r="30" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5"/>
+                <!-- Antena -->
+                <line x1="70" y1="22" x2="70" y2="10" stroke="#3b82f6" stroke-width="2"/>
+                <circle cx="70" cy="8" r="4" fill="#3b82f6"/>
+                <circle cx="70" cy="8" r="2" fill="#93c5fd"/>
+                <!-- Viseira/visor -->
+                <rect x="44" y="38" width="52" height="28" rx="10" fill="#0d1f3c" stroke="#3b82f6" stroke-width="1.5"/>
+                <!-- Reflexo viseira -->
+                <rect x="47" y="41" width="16" height="8" rx="4" fill="#1e3a5f" opacity=".6"/>
+                <!-- Olhos -->
+                <g class="olho" style="transform-origin:57px 52px;">
+                    <circle cx="57" cy="52" r="8" fill="#3b82f6" opacity=".9"/>
+                    <circle cx="57" cy="52" r="4" fill="#93c5fd"/>
+                    <circle cx="59" cy="50" r="1.5" fill="white" opacity=".8"/>
+                </g>
+                <g class="olho olho-dir" style="transform-origin:83px 52px;">
+                    <circle cx="83" cy="52" r="8" fill="#3b82f6" opacity=".9"/>
+                    <circle cx="83" cy="52" r="4" fill="#93c5fd"/>
+                    <circle cx="85" cy="50" r="1.5" fill="white" opacity=".8"/>
+                </g>
+                <!-- Boca -->
+                <path id="boca" class="boca" d="M 62 62 Q 70 68 78 62" stroke="#93c5fd" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <!-- Bochechas -->
+                <circle cx="46" cy="60" r="5" fill="#3b82f6" opacity=".2"/>
+                <circle cx="94" cy="60" r="5" fill="#3b82f6" opacity=".2"/>
+                <!-- Pés -->
+                <ellipse cx="55" cy="115" rx="12" ry="6" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5"/>
+                <ellipse cx="85" cy="115" rx="12" ry="6" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5"/>
+            </svg>
+
+            <!-- Balão de fala -->
+            <div class="balao" id="balao">
+                <strong>Olá! Eu sou o Agi!</strong><br>
+                Vou te guiar por tudo que o Amigo Gestor pode fazer por você. Use os botões abaixo ou clique nos tópicos do menu!
+            </div>
+
+            <!-- Progresso -->
+            <div style="width:100%;">
+                <div class="prog-bar-wrap">
+                    <div class="prog-bar-inner" id="prog-bar" style="width:0%"></div>
+                </div>
+                <div class="prog-label" id="prog-label">etapa 0 de 8</div>
+            </div>
+
+            <!-- Botões -->
+            <div class="nav-btns">
+                <button class="btn-nav btn-prev" id="btn-prev" onclick="irPara(etapaAtual-1)" disabled>← Anterior</button>
+                <button class="btn-nav btn-next" id="btn-next" onclick="irPara(etapaAtual+1)">Próximo →</button>
+            </div>
+
+            <!-- Menu de etapas -->
+            <div class="etapas-menu" id="etapas-menu"></div>
+        </div>
+    </div>
+
+    <!-- COLUNA DIREITA: Conteúdo da etapa -->
+    <div class="conteudo-col" id="conteudo"></div>
+
+</div>
+
+<script>
+var etapaAtual = 0;
+
+var etapas = [
+    {
+        menu: 'Visão geral',
+        balao: 'Bem-vindo ao <strong>Amigo Gestor</strong>! Deixa eu te contar o que esse sistema faz por você do começo ao fim.',
+        html: `
+        <div class="etapa-card">
+            <div class="etapa-numero">Introdução · etapa 1 de 8</div>
+            <div class="etapa-titulo">O que é o Amigo Gestor?</div>
+            <div class="etapa-desc">
+                O Amigo Gestor é uma plataforma de <strong>gestão de métricas de marketing digital</strong> para gestores de tráfego e agências. Ele centraliza tudo num só lugar: resultados de Meta Ads, Google Ads e Instagram Reels de cada cliente.
+            </div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">📊</span><div class="feat-titulo">Métricas semanais</div><div class="feat-desc">Registre e acompanhe os resultados de cada canal por semana.</div></div>
+                <div class="feat"><span class="feat-icon">👥</span><div class="feat-titulo">Multi-clientes</div><div class="feat-desc">Gerencie quantos clientes quiser, cada um com seu histórico.</div></div>
+                <div class="feat"><span class="feat-icon">🤖</span><div class="feat-titulo">Diagnóstico com IA</div><div class="feat-desc">Gera prompts prontos para você colar no ChatGPT e receber análises.</div></div>
+                <div class="feat"><span class="feat-icon">📅</span><div class="feat-titulo">Calendário</div><div class="feat-desc">Organize reuniões e entregas com envio de convites por e-mail.</div></div>
+            </div>
+            <div class="dica">
+                <strong>Dica:</strong> Tudo que você registra fica salvo no banco de dados. Sem perda de histórico.
+            </div>
+        </div>`
+    },
+    {
+        menu: 'Clientes',
+        balao: 'Cada cliente é uma pasta separada. Você cadastra e depois acessa o histórico completo dele a qualquer hora.',
+        html: `
+        <div class="etapa-card">
+            <div class="etapa-numero">Clientes · etapa 2 de 8</div>
+            <div class="etapa-titulo">Cadastrando e gerenciando clientes</div>
+            <div class="etapa-desc">
+                Na tela inicial você vê todos os seus clientes em cards. Cada card mostra o nome, segmento e um <strong>alerta de status</strong>: verde (atualizado), laranja (+10 dias sem dados) ou vermelho (sem dados nunca).
+            </div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">➕</span><div class="feat-titulo">Novo cliente</div><div class="feat-desc">Clique em "+ Novo Cliente" para cadastrar nome, segmento e e-mail do cliente.</div></div>
+                <div class="feat"><span class="feat-icon">📁</span><div class="feat-titulo">Ver cliente</div><div class="feat-desc">Clique em "Ver →" para acessar o histórico completo de métricas.</div></div>
+                <div class="feat"><span class="feat-icon">🗑️</span><div class="feat-titulo">Excluir</div><div class="feat-desc">O lixeiro apaga o cliente e todos os dados vinculados a ele. Confirme antes!</div></div>
+                <div class="feat"><span class="feat-icon">🔴</span><div class="feat-titulo">Alertas</div><div class="feat-desc">"Sem dados" = nunca inseriu métricas. "+10 dias" = faz mais de 10 dias sem atualizar.</div></div>
+            </div>
+            <div class="dica amarelo">
+                <strong>Atenção:</strong> Cadastre o e-mail do cliente ao criar — ele será usado para enviar convites de reunião direto pelo sistema.
+            </div>
+        </div>`
+    },
+    {
+        menu: 'Inserir métricas',
+        balao: 'Inserir métricas é o coração do sistema. Você registra os números de cada canal toda semana.',
+        html: `
+        <div class="etapa-card">
+            <div class="etapa-numero">Métricas · etapa 3 de 8</div>
+            <div class="etapa-titulo">Inserindo métricas semanais</div>
+            <div class="etapa-desc">
+                Dentro de cada cliente, clique em <strong>"+ Inserir métricas"</strong>. Escolha a data da semana e o canal. O formulário muda automaticamente para os campos certos de cada canal.
+            </div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">📘</span><div class="feat-titulo">Meta Ads</div><div class="feat-desc">CPM, CPC, CTR, ROAS, CPA, Frequência e Conversões.</div></div>
+                <div class="feat"><span class="feat-icon">🔍</span><div class="feat-titulo">Google Ads</div><div class="feat-desc">Impressões, CTR, CPC, CPA, ROAS, Conversões e Parcela de impressão.</div></div>
+                <div class="feat"><span class="feat-icon">🎬</span><div class="feat-titulo">Reels</div><div class="feat-desc">Views, Retenção %, Alcance, Curtidas, Comentários, Compartilhamentos e Salvamentos.</div></div>
+                <div class="feat"><span class="feat-icon">✏️</span><div class="feat-titulo">Editar / excluir</div><div class="feat-desc">Cada linha do histórico tem um ícone de edição. Você pode corrigir qualquer valor.</div></div>
+            </div>
+            <div class="dica verde">
+                <strong>Dica:</strong> Use sempre a mesma data para a mesma semana. O Review agrupa os dados por data.
+            </div>
+        </div>`
+    },
+    {
+        menu: 'Review semanal',
+        balao: 'O Review é onde a mágica acontece! Você vê tudo da semana num painel visual com cores e comparativos.',
+        html: `
+        <div class="etapa-card">
+            <div class="etapa-numero">Review · etapa 4 de 8</div>
+            <div class="etapa-titulo">Review semanal — seu painel de comando</div>
+            <div class="etapa-desc">
+                Acesse pelo botão <strong>"📋 Review Semanal"</strong> dentro do cliente. Escolha a semana no seletor e veja os cards de cada canal com métricas coloridas e comparativo com a semana anterior.
+            </div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">🟢🟡🔴</span><div class="feat-titulo">Status geral</div><div class="feat-desc">Saudável, Atenção ou Crítico — calculado automaticamente com base nas métricas.</div></div>
+                <div class="feat"><span class="feat-icon">▲▼</span><div class="feat-titulo">Deltas</div><div class="feat-desc">Setas verdes/vermelhas mostram se melhorou ou piorou em relação à semana passada.</div></div>
+                <div class="feat"><span class="feat-icon">📈</span><div class="feat-titulo">Gráficos</div><div class="feat-desc">Histórico de ROAS, CTR e Retenção em linha do tempo. Aparecem quando há 2+ semanas.</div></div>
+                <div class="feat"><span class="feat-icon">✅</span><div class="feat-titulo">Checklist</div><div class="feat-desc">15 tarefas organizadas por canal. Marque conforme você vai analisando. Salvo localmente.</div></div>
+            </div>
+            <div class="dica">
+                <strong>Anotações:</strong> O campo de notas fica salvo no seu navegador. Use para registrar contextos da semana.
+            </div>
+        </div>`
+    },
+    {
+        menu: 'Diagnóstico com IA',
+        balao: 'O sistema monta um prompt completo com as métricas da semana. Você copia e cola no ChatGPT — é só isso!',
+        html: `
+        <div class="etapa-card">
+            <div class="etapa-numero">IA · etapa 5 de 8</div>
+            <div class="etapa-titulo">Diagnóstico com IA via ChatGPT</div>
+            <div class="etapa-desc">
+                Na tela de Review e no Relatório BI, há uma seção <strong>"Diagnóstico com IA"</strong>. O sistema já monta o prompt completo com todos os dados da semana/período. Você escolhe o tipo de análise e clica em copiar.
+            </div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">🔍</span><div class="feat-titulo">Diagnóstico</div><div class="feat-desc">Analisa canal por canal, identifica pontos críticos e oportunidades.</div></div>
+                <div class="feat"><span class="feat-icon">📋</span><div class="feat-titulo">Para o gestor</div><div class="feat-desc">Gera uma lista de 5 a 8 ações práticas para executar na semana.</div></div>
+                <div class="feat"><span class="feat-icon">💌</span><div class="feat-titulo">Para o cliente</div><div class="feat-desc">Texto profissional de relatório para enviar direto ao cliente.</div></div>
+                <div class="feat"><span class="feat-icon">🚀</span><div class="feat-titulo">Copiar e abrir</div><div class="feat-desc">Um clique copia o prompt e abre o ChatGPT. Só colar e enviar.</div></div>
+            </div>
+            <div class="dica roxo">
+                <strong>Dica:</strong> Quanto mais semanas inseridas, mais rico o contexto do prompt e melhor a análise da IA.
+            </div>
+        </div>`
+    },
+    {
+        menu: 'Relatório BI',
+        balao: 'O Relatório BI é para análises mais profundas — por semana ou por mês inteiro, com gráficos e exportação em PDF.',
+        html: `
+        <div class="etapa-card">
+            <div class="etapa-numero">Relatório · etapa 6 de 8</div>
+            <div class="etapa-titulo">Relatório BI — análise completa</div>
+            <div class="etapa-desc">
+                Acesse pelo botão <strong>"📊 Relatório BI"</strong>. Escolha entre análise semanal ou mensal usando os botões no topo. Veja KPIs resumidos, gráficos de evolução e dados detalhados do período.
+            </div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">📊</span><div class="feat-titulo">4 KPIs principais</div><div class="feat-desc">Conversões totais, melhor ROAS, média de retenção e canais ativos.</div></div>
+                <div class="feat"><span class="feat-icon">📈</span><div class="feat-titulo">4 gráficos</div><div class="feat-desc">Meta ROAS+CTR, Google ROAS+Parcela, Retenção Reels e Conversões combinadas.</div></div>
+                <div class="feat"><span class="feat-icon">🖨️</span><div class="feat-titulo">Exportar PDF</div><div class="feat-desc">Abre uma aba limpa e formatada com todos os dados. Clique em imprimir para salvar como PDF.</div></div>
+                <div class="feat"><span class="feat-icon">📅</span><div class="feat-titulo">Mensal</div><div class="feat-desc">Agrupa todas as semanas do mês selecionado e calcula médias e totais automaticamente.</div></div>
+            </div>
+            <div class="dica verde">
+                <strong>PDF:</strong> No navegador, ao imprimir, escolha "Salvar como PDF" na impressora. O layout já está otimizado para isso.
+            </div>
+        </div>`
+    },
+    {
+        menu: 'Calendário e ganchos',
+        balao: 'O calendário organiza sua agenda de conteúdo e reuniões. O banco de ganchos guarda os melhores textos de abertura de vídeo!',
+        html: `
+        <div class="etapa-card">
+            <div class="etapa-numero">Extras · etapa 7 de 8</div>
+            <div class="etapa-titulo">Calendário, ganchos e metas</div>
+            <div class="etapa-desc">
+                Três ferramentas extras que completam a gestão do cliente além das métricas.
+            </div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">📅</span><div class="feat-titulo">Calendário</div><div class="feat-desc">Crie eventos como postagens, campanhas e reuniões. Integra com Google Calendar. Reuniões enviam convite por e-mail automaticamente.</div></div>
+                <div class="feat"><span class="feat-icon">🪝</span><div class="feat-titulo">Banco de ganchos</div><div class="feat-desc">Salve os textos de abertura (hooks) de Reels que funcionaram melhor. Filtre por categoria ou retenção. Copie com um clique.</div></div>
+                <div class="feat"><span class="feat-icon">🎯</span><div class="feat-titulo">Metas</div><div class="feat-desc">Defina metas de ROAS, CPA, CTR e Retenção por cliente. O semáforo na tela do cliente mostra se está no caminho certo.</div></div>
+                <div class="feat"><span class="feat-icon">📧</span><div class="feat-titulo">Convite de reunião</div><div class="feat-desc">Ao criar uma reunião no calendário, preencha o e-mail do cliente. O sistema envia o convite com link do Google Calendar automaticamente.</div></div>
+            </div>
+            <div class="dica amarelo">
+                <strong>Para o convite funcionar:</strong> configure as variáveis EMAIL_USER e EMAIL_PASS nas configurações do servidor (Render → Environment Variables).
+            </div>
+        </div>`
+    },
+    {
+        menu: 'Conta e acesso',
+        balao: 'Pronto! Última etapa: como gerenciar sua conta e acessar o sistema de qualquer lugar.',
+        html: `
+        <div class="etapa-card">
+            <div class="etapa-numero">Conta · etapa 8 de 8</div>
+            <div class="etapa-titulo">Sua conta e acesso ao sistema</div>
+            <div class="etapa-desc">
+                O sistema usa autenticação por <strong>e-mail e senha</strong>. Ao se cadastrar, você recebe um e-mail de confirmação. Após confirmar, pode fazer login normalmente.
+            </div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">✅</span><div class="feat-titulo">Verificação de e-mail</div><div class="feat-desc">Ao cadastrar, confira sua caixa de entrada. Clique no link para ativar a conta.</div></div>
+                <div class="feat"><span class="feat-icon">🔐</span><div class="feat-titulo">Senha segura</div><div class="feat-desc">Sua senha é armazenada com criptografia SHA-256. Nunca em texto simples.</div></div>
+                <div class="feat"><span class="feat-icon">👤</span><div class="feat-titulo">Usuários cadastrados</div><div class="feat-desc">Administradores podem acessar /admin/usuarios para ver todos os usuários e status de verificação.</div></div>
+                <div class="feat"><span class="feat-icon">🚪</span><div class="feat-titulo">Logout</div><div class="feat-desc">Use o botão "Sair" no canto superior direito a qualquer momento. A sessão é encerrada com segurança.</div></div>
+            </div>
+            <div class="dica verde">
+                <strong>Tudo pronto!</strong> Agora você conhece o sistema completo. Clique em "Começar agora" para ir à tela inicial!
+            </div>
+        </div>
+        <div class="etapa-card final-wrap">
+            <span class="final-icon">🎉</span>
+            <div class="final-titulo">Você está pronto para usar o Amigo Gestor!</div>
+            <div class="final-desc">Cadastre seu primeiro cliente, insira as métricas da semana e veja o sistema trabalhar por você.</div>
+            <a href="/" class="btn-comecar">🚀 Começar agora</a>
+        </div>`
+    }
+];
+
+// Falas do mascote por etapa
+var falas = [
+    'Bem-vindo! Eu sou o <strong>Agi</strong>, seu assistente virtual. Vou te mostrar tudo que o Amigo Gestor faz por você!',
+    'Cada cliente é uma pasta separada. O sistema avisa quando faz tempo que você não insere métricas — assim nenhum cliente fica esquecido!',
+    'Inserir métricas é simples! Escolha a data, o canal e preencha os campos. Você pode editar qualquer valor depois se errar.',
+    'O Review é seu painel principal! As cores te dizem na hora se a performance está boa ou precisa de atenção. Compare semana a semana!',
+    'Aqui fica o superpoder do sistema! Eu monto o prompt completo com todos os dados e você só cola no ChatGPT. Que praticidade!',
+    'O Relatório BI é para análises mais profundas. Dá pra ver o mês inteiro, exportar PDF e levar para uma reunião com o cliente!',
+    'Calendário para organizar a agenda, ganchos para guardar os melhores hooks de Reels e metas para saber se está no caminho certo!',
+    'Pronto! Agora você conhece tudo. Sua conta está segura e você pode acessar de qualquer dispositivo. Vamos começar?'
+];
+
+function renderMenu(){
+    var menu = document.getElementById('etapas-menu');
+    menu.innerHTML = '';
+    etapas.forEach(function(e, i){
+        var cl = i === etapaAtual ? 'ativo' : (i < etapaAtual ? 'feito' : '');
+        menu.innerHTML += `<div class="menu-item ${cl}" onclick="irPara(${i})">
+            <div class="menu-dot"></div>
+            <span>${e.menu}</span>
+            <span class="check-badge">✓</span>
+        </div>`;
+    });
+}
+
+function irPara(idx){
+    if(idx < 0 || idx >= etapas.length) return;
+    etapaAtual = idx;
+
+    // Conteúdo
+    document.getElementById('conteudo').innerHTML = etapas[idx].html;
+
+    // Balão do mascote
+    document.getElementById('balao').innerHTML = falas[idx];
+
+    // Progresso
+    var pct = Math.round((idx / (etapas.length - 1)) * 100);
+    document.getElementById('prog-bar').style.width = pct + '%';
+    document.getElementById('prog-label').textContent = 'etapa ' + (idx+1) + ' de ' + etapas.length;
+
+    // Botões
+    document.getElementById('btn-prev').disabled = idx === 0;
+    document.getElementById('btn-next').textContent = idx === etapas.length - 1 ? '✓ Concluir' : 'Próximo →';
+    document.getElementById('btn-next').onclick = idx === etapas.length - 1
+        ? function(){ window.location.href = '/'; }
+        : function(){ irPara(etapaAtual + 1); };
+
+    renderMenu();
+
+    // Scroll suave para o topo do conteúdo em mobile
+    if(window.innerWidth <= 800){
+        document.getElementById('conteudo').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+}
+
+// Init
+irPara(0);
+</script>
+</body>
+</html>

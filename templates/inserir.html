@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inserir Métricas</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden;
+            font-family: Arial, sans-serif;
+            background: #0a0f1e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+            color: white;
+        }
+        h1 { font-size: 22px; margin-bottom: 24px; }
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 420px;
+        }
+        @media(max-width:640px){ .card { padding: 20px 16px !important; max-width: 100%; } }
+        label {
+            font-size: 14px;
+            color: #94a3b8;
+            display: block;
+            margin-bottom: 4px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            font-size: 15px;
+            background: #0a0f1e;
+            color: white;
+        }
+        .secao {
+            font-size: 12px;
+            font-weight: bold;
+            color: #3b82f6;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin: 20px 0 10px;
+            padding-top: 16px;
+            border-top: 1px solid #334155;
+        }
+        .campos-canal { display: none; }
+        button {
+            width: 100%;
+            padding: 13px;
+            background: #1e3a5f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+        button:hover { background: #1e40af; }
+        .voltar {
+            color: #94a3b8;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+            font-size: 14px;
+        }
+    
+        /* ── MOBILE RESPONSIVO ── */
+        @media (max-width: 640px) {
+            body { padding: 16px 14px !important; }
+            h1 { font-size: 18px !important; }
+
+            /* Nav / topo */
+            .nav, .topo { flex-wrap: wrap; gap: 8px; }
+            .topo-acoes { flex-wrap: wrap; }
+            .brand { font-size: 16px !important; }
+
+            /* Header cards */
+            .header { padding: 16px 18px !important; flex-direction: column; align-items: flex-start !important; }
+            .header h1 { font-size: 20px !important; }
+            .header-btns { width: 100%; }
+            .header-btns .btn, .header-btns a { flex: 1; justify-content: center; font-size: 12px !important; padding: 8px 10px !important; }
+
+            /* Grids viram coluna única */
+            .grid-3, .grid-2, .kpi-grid { grid-template-columns: 1fr !important; }
+            .check-cols { grid-template-columns: 1fr !important; }
+            .metricas-grid { grid-template-columns: 1fr 1fr !important; }
+
+            /* Tabelas — scroll horizontal */
+            .table-wrap, table { overflow-x: auto; display: block; -webkit-overflow-scrolling: touch; }
+            table { min-width: 480px; }
+
+            /* Formulários */
+            .card, .box { padding: 20px 16px !important; }
+            .layout { grid-template-columns: 1fr !important; }
+
+            /* Botões de ação empilham */
+            .acoes { flex-wrap: wrap; gap: 6px; }
+            .acoes .btn-ver { flex: 1; text-align: center; }
+
+            /* Semana bar */
+            .semana-bar { flex-direction: column; align-items: flex-start !important; gap: 8px !important; }
+            .semana-bar select { width: 100%; }
+            .status-badge { margin-left: 0 !important; }
+
+            /* Período bar relatório */
+            .periodo-bar { flex-wrap: wrap; gap: 8px; }
+
+            /* Calendário */
+            .cal-wrap { padding: 12px !important; }
+            .fc .fc-toolbar { flex-direction: column; gap: 8px; }
+            .fc .fc-toolbar-title { font-size: 14px !important; }
+
+            /* Checklist */
+            .checklist-card { padding: 16px !important; }
+
+            /* IA card */
+            .ia-card { padding: 16px !important; }
+            .ia-tabs { gap: 6px; }
+            .ia-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Hist tabs */
+            .hist-tabs { gap: 6px; }
+            .hist-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Ganchos grid */
+            .ganchos-grid { grid-template-columns: 1fr !important; }
+            .stats-row { flex-direction: column; }
+
+            /* Filtros */
+            .filtros { gap: 6px; }
+            .filtro-btn { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Login/cadastro/setup */
+            .box { max-width: 100% !important; }
+
+            /* Charts — altura menor no mobile */
+            .chart-wrap { height: 130px !important; }
+
+            /* Modal */
+            .modal { width: 95% !important; padding: 20px !important; }
+
+            /* Painel lateral vira coluna */
+            .painel { order: 2; }
+            .cal-wrap { order: 1; }
+
+            /* Botões de submit full width */
+            .btn-submit, .btn-salvar, .btn-entrar, .btn-cadastrar, .btn { width: 100%; }
+
+            /* Overflow geral */
+            * { max-width: 100%; }
+            pre { white-space: pre-wrap; word-break: break-word; }
+        }
+
+        @media (max-width: 400px) {
+            body { padding: 12px 10px !important; }
+            .met-val { font-size: 15px !important; }
+            .kpi-val { font-size: 20px !important; }
+            thead th { font-size: 9px !important; padding: 7px 8px !important; }
+            td { font-size: 11px !important; padding: 7px 8px !important; }
+        }
+
+        </style>
+</head>
+<body>
+    <div id="loader" style="position:fixed;inset:0;z-index:9999;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 0.4s ease;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:22px;">📊</span>
+            <span style="font-size:20px;font-weight:700;color:white;">Amigo Gestor</span>
+        </div>
+        <div style="width:180px;height:3px;background:#1e293b;border-radius:99px;overflow:hidden;">
+            <div id="loader-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:99px;transition:width 0.5s ease;"></div>
+        </div>
+        <span style="font-size:13px;color:#475569;" id="loader-txt">Carregando...</span>
+    </div>
+    <a class="voltar" href="/cliente/{{ id }}">← Voltar</a>
+    <h1>📥 Inserir Métricas</h1>
+    <div class="card">
+        <form action="/inserir/{{ id }}" method="POST">
+
+            <p class="secao">Período</p>
+
+            <label>Data da semana</label>
+            <input type="date" name="data" required>
+
+            <label>Canal</label>
+            <select name="canal" id="canal" onchange="mostrarCampos()">
+                <option value="" disabled selected>Selecione o canal...</option>
+                <option value="meta">📘 Meta Ads</option>
+                <option value="google">🔍 Google Ads</option>
+                <option value="reels">🎬 Instagram Reels</option>
+            </select>
+
+            <!-- Campos Meta Ads -->
+            <div class="campos-canal" id="campos-meta">
+                <p class="secao">Meta Ads</p>
+                <label>CPM (R$)</label>
+                <input type="number" step="0.01" name="cpm" placeholder="Ex: 12.50">
+                <label>CPC (R$)</label>
+                <input type="number" step="0.01" name="cpc" placeholder="Ex: 1.80">
+                <label>CTR (%)</label>
+                <input type="number" step="0.01" name="ctr" placeholder="Ex: 2.5">
+                <label>ROAS</label>
+                <input type="number" step="0.01" name="roas" placeholder="Ex: 3.2">
+                <label>CPA (R$)</label>
+                <input type="number" step="0.01" name="cpa" placeholder="Ex: 45.00">
+                <label>Frequência</label>
+                <input type="number" step="0.01" name="frequencia" placeholder="Ex: 2.1">
+                <label>Conversões</label>
+                <input type="number" name="conversoes" placeholder="Ex: 38">
+            </div>
+
+            <!-- Campos Google Ads -->
+            <div class="campos-canal" id="campos-google">
+                <p class="secao">Google Ads</p>
+                <label>Impressões</label>
+                <input type="number" name="impressoes" placeholder="Ex: 15000">
+                <label>CTR (%)</label>
+                <input type="number" step="0.01" name="ctr" placeholder="Ex: 4.2">
+                <label>CPC (R$)</label>
+                <input type="number" step="0.01" name="cpc" placeholder="Ex: 2.10">
+                <label>CPA (R$)</label>
+                <input type="number" step="0.01" name="cpa" placeholder="Ex: 38.00">
+                <label>ROAS</label>
+                <input type="number" step="0.01" name="roas" placeholder="Ex: 4.1">
+                <label>Conversões</label>
+                <input type="number" name="conversoes" placeholder="Ex: 52">
+                <label>Parcela de impressão (%)</label>
+                <input type="number" step="0.01" name="parcela_impressao" placeholder="Ex: 68.5">
+            </div>
+
+            <!-- Campos Reels -->
+            <div class="campos-canal" id="campos-reels">
+                <p class="secao">Instagram Reels</p>
+                <label>Nome do vídeo</label>
+                <input type="text" name="nome_video" placeholder="Ex: Reel semana 1 — produto X">
+                <label>Views</label>
+                <input type="number" name="views" placeholder="Ex: 8500">
+                <label>Retenção (%)</label>
+                <input type="number" step="0.01" name="retencao" placeholder="Ex: 35.0">
+                <label>Alcance</label>
+                <input type="number" name="alcance" placeholder="Ex: 6200">
+                <label>Curtidas</label>
+                <input type="number" name="curtidas" placeholder="Ex: 420">
+                <label>Comentários</label>
+                <input type="number" name="comentarios" placeholder="Ex: 38">
+                <label>Compartilhamentos</label>
+                <input type="number" name="compartilhamentos" placeholder="Ex: 95">
+                <label>Salvamentos</label>
+                <input type="number" name="salvamentos" placeholder="Ex: 210">
+            </div>
+
+            <button type="submit">Salvar métricas</button>
+        </form>
+    </div>
+
+    <script>
+        function mostrarCampos() {
+            const canal = document.getElementById('canal').value;
+            document.querySelectorAll('.campos-canal').forEach(el => el.style.display = 'none');
+            if (canal) {
+                document.getElementById('campos-' + canal).style.display = 'block';
+            }
+        }
+    </script>
+    <script>
+        (function(){
+            var bar=document.getElementById('loader-bar');
+            var txt=document.getElementById('loader-txt');
+            var loader=document.getElementById('loader');
+            var p=0,i=0;
+            var msgs=['Carregando...','Buscando dados...','Quase lá...'];
+            var iv=setInterval(function(){
+                p=Math.min(p+Math.random()*18+5,88);
+                bar.style.width=p+'%';
+                if(i<msgs.length-1&&p>40+i*25){i++;txt.textContent=msgs[i];}
+            },180);
+            window.addEventListener('load',function(){
+                clearInterval(iv);
+                bar.style.width='100%';
+                txt.textContent='Pronto!';
+                setTimeout(function(){
+                    loader.style.opacity='0';
+                    setTimeout(function(){loader.style.display='none';},400);
+                },200);
+            });
+            document.querySelectorAll('a[href],button[type=submit]').forEach(function(el){
+                el.addEventListener('click',function(){
+                    loader.style.display='flex';loader.style.opacity='1';
+                    bar.style.width='0%';p=0;i=0;txt.textContent='Carregando...';
+                    setInterval(function(){p=Math.min(p+Math.random()*20+8,85);bar.style.width=p+'%';},150);
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

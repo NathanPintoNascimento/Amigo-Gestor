@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário — {{ cliente[1] }}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.min.js"></script>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;padding:24px;min-height:100vh;}
+        .nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
+        .voltar{color:#475569;text-decoration:none;font-size:14px;}
+        .voltar:hover{color:#94a3b8;}
+        .brand{font-size:13px;color:#334155;font-weight:700;letter-spacing:.06em;}
+        .header{background:linear-gradient(135deg,#111827,#0d1f3c);border:1px solid #1e3a5f;border-radius:16px;padding:22px 28px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;}
+        .header h1{font-size:22px;font-weight:700;background:linear-gradient(90deg,#e2e8f0,#93c5fd);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:4px;}
+        .seg-badge{background:#1e3a5f;color:#93c5fd;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;}
+        .header-btns{display:flex;gap:8px;flex-wrap:wrap;}
+        .btn{padding:9px 16px;border-radius:9px;text-decoration:none;font-size:13px;font-weight:600;border:1px solid transparent;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
+        .btn-blue{background:#1e3a5f;color:#93c5fd;border-color:#2d5a9e;}
+        .btn-blue:hover{background:#1e40af;color:white;}
+        .btn-green{background:#064e3b;color:#6ee7b7;border-color:#065f46;}
+        .btn-green:hover{background:#047857;color:white;}
+
+        .layout{display:grid;grid-template-columns:300px 1fr;gap:16px;}
+        @media(max-width:900px){.layout{grid-template-columns:1fr;}}
+        .painel{display:flex;flex-direction:column;gap:14px;}
+        .card{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:18px 20px;}
+        .card-title{font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em;}
+
+        .form-label{font-size:12px;color:#64748b;display:block;margin-bottom:4px;margin-top:10px;}
+        .form-label:first-child{margin-top:0;}
+        .form-input{width:100%;padding:9px 12px;background:#0a0f1e;border:1px solid #1e293b;border-radius:8px;color:#e2e8f0;font-size:13px;font-family:inherit;transition:border-color .15s;}
+        .form-input:focus{outline:none;border-color:#2d5a9e;}
+        .form-select{width:100%;padding:9px 12px;background:#0a0f1e;border:1px solid #1e293b;border-radius:8px;color:#e2e8f0;font-size:13px;cursor:pointer;}
+        .btn-submit{width:100%;padding:10px;background:#1e3a5f;color:#93c5fd;border:1px solid #2d5a9e;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin-top:14px;transition:all .15s;}
+        .btn-submit:hover{background:#1e40af;color:white;}
+
+        /* Campo de e-mail do convite (só aparece quando tipo = reuniao) */
+        #campo-email-convite{display:none;}
+        .email-convite-hint{font-size:11px;color:#334155;margin-top:4px;}
+        .convite-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;background:#052e16;color:#4ade80;border:1px solid #14532d;border-radius:6px;padding:3px 8px;margin-top:4px;}
+
+        .legenda{display:flex;flex-direction:column;gap:6px;}
+        .leg-item{display:flex;align-items:center;gap:8px;font-size:12px;color:#64748b;}
+        .leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+        .evento-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #0a0f1e;}
+        .evento-item:last-child{border-bottom:none;}
+        .evento-cor{width:4px;border-radius:2px;flex-shrink:0;align-self:stretch;min-height:36px;}
+        .evento-info{flex:1;}
+        .evento-titulo{font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:2px;}
+        .evento-data{font-size:11px;color:#475569;}
+        .evento-tipo{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:1px 7px;border-radius:20px;display:inline-block;margin-top:3px;}
+        .evento-excluir{background:transparent;border:none;color:#334155;cursor:pointer;font-size:14px;padding:4px;border-radius:6px;transition:all .15s;flex-shrink:0;}
+        .evento-excluir:hover{background:#450a0a;color:#f87171;}
+
+        .cal-wrap{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:20px;}
+        .fc{color:#e2e8f0!important;}
+        .fc .fc-toolbar-title{font-size:16px!important;font-weight:700!important;color:#e2e8f0!important;}
+        .fc .fc-button{background:#1e293b!important;border-color:#334155!important;color:#94a3b8!important;font-size:12px!important;padding:5px 12px!important;border-radius:7px!important;}
+        .fc .fc-button:hover{background:#334155!important;color:#e2e8f0!important;}
+        .fc .fc-button-primary:not(:disabled).fc-button-active{background:#1e3a5f!important;border-color:#2d5a9e!important;color:#93c5fd!important;}
+        .fc-theme-standard td,.fc-theme-standard th{border-color:#1e293b!important;}
+        .fc-theme-standard .fc-scrollgrid{border-color:#1e293b!important;}
+        .fc .fc-daygrid-day{background:#0a0f1e!important;}
+        .fc .fc-daygrid-day:hover{background:#111827!important;}
+        .fc .fc-daygrid-day.fc-day-today{background:#0d1f3c!important;}
+        .fc .fc-col-header-cell{background:#060c18!important;}
+        .fc .fc-col-header-cell-cushion{color:#334155!important;font-size:11px!important;font-weight:700!important;text-transform:uppercase!important;letter-spacing:.06em!important;text-decoration:none!important;}
+        .fc .fc-daygrid-day-number{color:#475569!important;font-size:12px!important;text-decoration:none!important;}
+        .fc .fc-day-today .fc-daygrid-day-number{color:#93c5fd!important;font-weight:700!important;}
+        .fc-event{border-radius:5px!important;font-size:11px!important;padding:2px 5px!important;border:none!important;cursor:pointer!important;}
+
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
+        .modal-overlay.aberto{display:flex;}
+        .modal{background:#1e293b;border-radius:14px;padding:24px 26px;max-width:340px;width:90%;border:1px solid #334155;}
+        .modal h3{font-size:16px;font-weight:700;margin-bottom:4px;}
+        .modal-tipo{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;}
+        .modal-info{font-size:13px;color:#94a3b8;line-height:1.6;}
+        .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap;}
+        .modal-fechar{padding:8px 16px;background:transparent;color:#64748b;border:1px solid #334155;border-radius:8px;font-size:13px;cursor:pointer;}
+        .modal-fechar:hover{background:#334155;color:white;}
+
+        #loader{position:fixed;inset:0;z-index:9999;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s ease;}
+    </style>
+</head>
+<body>
+
+<div id="loader">
+    <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">📊</span><span style="font-size:20px;font-weight:700;color:white;">Amigo Gestor</span></div>
+    <div style="width:180px;height:3px;background:#1e293b;border-radius:99px;overflow:hidden;"><div id="loader-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:99px;transition:width .5s ease;"></div></div>
+    <span style="font-size:13px;color:#475569;" id="loader-txt">Carregando...</span>
+</div>
+
+<div class="nav">
+    <a class="voltar" href="/cliente/{{ cliente[0] }}">← Voltar</a>
+    <span class="brand">AMIGO GESTOR</span>
+</div>
+
+<div class="header">
+    <div>
+        <div style="font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Calendário de Conteúdo</div>
+        <h1>{{ cliente[1] }}</h1>
+        <span class="seg-badge">{{ cliente[2] }}</span>
+    </div>
+    <div class="header-btns">
+        <a class="btn btn-blue" href="/review/{{ cliente[0] }}">📋 Review</a>
+        <a class="btn btn-green" href="/ganchos/{{ cliente[0] }}">🪝 Ganchos</a>
+    </div>
+</div>
+
+<div class="layout">
+    <div class="painel">
+
+        <!-- Novo evento -->
+        <div class="card">
+            <div class="card-title">+ Novo Evento</div>
+            <form action="/calendario/{{ cliente[0] }}/novo" method="POST">
+                <label class="form-label">Título</label>
+                <input class="form-input" type="text" name="titulo"
+                    placeholder="Ex: Reel do produto X" required>
+
+                <label class="form-label">Tipo</label>
+                <select class="form-select" name="tipo" id="sel-tipo"
+                    onchange="mostrarEmailConvite(this.value)">
+                    <option value="postagem">🎬 Postagem de Reel</option>
+                    <option value="review">📋 Review de Métricas</option>
+                    <option value="metricas">📊 Inserir Métricas</option>
+                    <option value="campanha">🚀 Subir Campanha</option>
+                    <option value="reuniao">🤝 Reunião com Cliente</option>
+                    <option value="outro">📌 Outro</option>
+                </select>
+
+                <label class="form-label">Data</label>
+                <input class="form-input" type="date" name="data_evento" required>
+
+                <label class="form-label">Horário (opcional)</label>
+                <input class="form-input" type="time" name="hora">
+
+                <label class="form-label">Descrição (opcional)</label>
+                <textarea class="form-input" name="descricao" rows="2"
+                    placeholder="Detalhes do evento..."
+                    style="resize:vertical;min-height:56px;"></textarea>
+
+                <!-- Campo de convite — só aparece para Reunião -->
+                <div id="campo-email-convite">
+                    <label class="form-label" style="color:#a78bfa;">
+                        📧 E-mail do cliente para convite
+                    </label>
+                    <input class="form-input" type="email" name="email_convite"
+                        placeholder="cliente@email.com"
+                        style="border-color:#4c1d95;">
+                    <div class="email-convite-hint">
+                        Um e-mail com link do Google Calendar será enviado automaticamente.
+                    </div>
+                    {% if cliente[3] %}
+                    <div style="margin-top:6px;">
+                        <span class="convite-badge">✓ E-mail cadastrado: {{ cliente[3] }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <button class="btn-submit" type="submit">Criar evento</button>
+            </form>
+        </div>
+
+        <!-- Legenda -->
+        <div class="card">
+            <div class="card-title">Legenda</div>
+            <div class="legenda">
+                <div class="leg-item"><div class="leg-dot" style="background:#ec4899;"></div>Postagem de Reel</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#3b82f6;"></div>Review de Métricas</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#f59e0b;"></div>Inserir Métricas</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#22c55e;"></div>Subir Campanha</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#a78bfa;"></div>Reunião com Cliente</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#64748b;"></div>Outro</div>
+            </div>
+        </div>
+
+        <!-- Próximos eventos -->
+        <div class="card">
+            <div class="card-title">Próximos Eventos</div>
+            {% set CORES = {'postagem':'#ec4899','review':'#3b82f6','metricas':'#f59e0b','campanha':'#22c55e','reuniao':'#a78bfa','outro':'#64748b'} %}
+            {% if eventos %}
+            {% for e in eventos[:8] %}
+            <div class="evento-item">
+                <div class="evento-cor" style="background:{{ CORES.get(e[3],'#64748b') }};"></div>
+                <div class="evento-info">
+                    <div class="evento-titulo">{{ e[2] }}</div>
+                    <div class="evento-data">{{ e[4] }}{% if e[5] %} às {{ e[5] }}{% endif %}</div>
+                    <span class="evento-tipo"
+                        style="background:{{ CORES.get(e[3],'#64748b') }}20;color:{{ CORES.get(e[3],'#64748b') }};">
+                        {{ e[3] }}
+                    </span>
+                </div>
+                <form action="/calendario/excluir/{{ e[0] }}" method="POST"
+                    onsubmit="return confirm('Excluir este evento?')">
+                    <button class="evento-excluir" type="submit">🗑️</button>
+                </form>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="color:#334155;font-size:13px;text-align:center;padding:16px 0;">
+                Nenhum evento criado ainda.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Calendário -->
+    <div class="cal-wrap">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<!-- Modal de evento -->
+<div class="modal-overlay" id="modal-evento">
+    <div class="modal">
+        <h3 id="modal-titulo">—</h3>
+        <div class="modal-tipo" id="modal-tipo">—</div>
+        <div class="modal-info" id="modal-info">—</div>
+        <div class="modal-btns">
+            <button class="modal-fechar" onclick="fecharModal()">Fechar</button>
+            <a id="modal-gcal-btn" href="#" target="_blank"
+                class="btn btn-green" style="font-size:12px;padding:8px 14px;">
+                📅 Abrir no Google Calendar
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+const CLIENTE_ID = {{ cliente[0] }};
+
+// Loader
+(function(){
+    var bar=document.getElementById('loader-bar'),txt=document.getElementById('loader-txt'),
+        loader=document.getElementById('loader'),p=0,i=0;
+    var msgs=['Carregando...','Buscando eventos...','Quase lá...'];
+    var iv=setInterval(function(){
+        p=Math.min(p+Math.random()*18+5,88);
+        bar.style.width=p+'%';
+        if(i<msgs.length-1&&p>40+i*25){i++;txt.textContent=msgs[i];}
+    },180);
+    window.addEventListener('load',function(){
+        clearInterval(iv);bar.style.width='100%';txt.textContent='Pronto!';
+        setTimeout(function(){loader.style.opacity='0';
+            setTimeout(function(){loader.style.display='none';},400);},200);
+    });
+})();
+
+// Mostra campo de e-mail apenas para reunião
+function mostrarEmailConvite(tipo) {
+    document.getElementById('campo-email-convite').style.display =
+        tipo === 'reuniao' ? 'block' : 'none';
+}
+
+function fecharModal(){ document.getElementById('modal-evento').classList.remove('aberto'); }
+document.getElementById('modal-evento').addEventListener('click',function(e){
+    if(e.target===this) fecharModal();
+});
+
+const TIPO_LABELS = {
+    postagem:'🎬 Postagem de Reel', review:'📋 Review de Métricas',
+    metricas:'📊 Inserir Métricas', campanha:'🚀 Subir Campanha',
+    reuniao:'🤝 Reunião com Cliente', outro:'📌 Outro'
+};
+
+function gerarLinkGCal(titulo, data, hora, descricao, tipo) {
+    var dt = data.replace(/-/g,'');
+    var start, end;
+    if (hora) {
+        var hi = hora.replace(':','')+'00';
+        var he = String(parseInt(hora.split(':')[0])+1).padStart(2,'0')+hora.split(':')[1]+'00';
+        start = dt+'T'+hi; end = dt+'T'+he;
+    } else {
+        start = dt; end = dt;
+    }
+    var p = new URLSearchParams({
+        action:'TEMPLATE', text:titulo,
+        dates:start+'/'+end,
+        details:(descricao||'')+'\n\nTipo: '+(TIPO_LABELS[tipo]||tipo)+'\nCriado pelo Amigo Gestor'
+    });
+    return 'https://calendar.google.com/calendar/render?'+p.toString();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var calEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calEl, {
+        initialView: 'dayGridMonth',
+        locale: 'pt-br',
+        height: 'auto',
+        headerToolbar: {
+            left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,listWeek'
+        },
+        buttonText:{today:'Hoje',month:'Mês',week:'Semana',list:'Lista'},
+        events: '/api/eventos/'+CLIENTE_ID,
+        eventClick: function(info) {
+            var e=info.event, props=e.extendedProps;
+            var data=e.startStr.split('T')[0];
+            var hora=e.startStr.includes('T')?e.startStr.split('T')[1].substring(0,5):'';
+            document.getElementById('modal-titulo').textContent = e.title;
+            document.getElementById('modal-tipo').textContent = TIPO_LABELS[props.tipo]||props.tipo;
+            document.getElementById('modal-tipo').style.color = e.backgroundColor;
+            document.getElementById('modal-info').innerHTML =
+                '<strong>Data:</strong> '+data+(hora?' às '+hora:'')+
+                (props.descricao?'<br><br>'+props.descricao:'');
+            document.getElementById('modal-gcal-btn').href =
+                gerarLinkGCal(e.title, data, hora, props.descricao, props.tipo);
+            document.getElementById('modal-evento').classList.add('aberto');
+        },
+        dayMaxEvents: 3
+    });
+    calendar.render();
+});
+</script>
+</body>
+</html>

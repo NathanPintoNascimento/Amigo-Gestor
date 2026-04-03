@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metas — {{ cliente[1] }}</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;}
+        .voltar{color:#475569;text-decoration:none;font-size:14px;margin-bottom:20px;display:inline-block;align-self:flex-start;}
+        .voltar:hover{color:#94a3b8;}
+        .canal-tag{display:inline-block;background:#064e3b;color:#4ade80;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;margin-bottom:16px;letter-spacing:.06em;}
+        h1{font-size:20px;font-weight:700;margin-bottom:6px;}
+        .seg{font-size:13px;color:#475569;margin-bottom:24px;}
+        .card{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:28px 30px;width:100%;max-width:440px;}
+        .card-title{font-size:13px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:20px;}
+        .meta-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0;}
+        .meta-item{background:#0a0f1e;border-radius:10px;padding:14px 16px;border:1px solid #1e293b;}
+        .meta-canal{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+        .meta-canal.meta-ads{color:#3b82f6;}
+        .meta-canal.google-ads{color:#f59e0b;}
+        .meta-canal.reels{color:#ec4899;}
+        .meta-canal.geral{color:#22c55e;}
+        label{font-size:12px;color:#64748b;display:block;margin-bottom:4px;margin-top:10px;}
+        label:first-of-type{margin-top:0;}
+        input{width:100%;padding:9px 12px;background:#0f172a;border:1px solid #1e293b;border-radius:8px;color:#e2e8f0;font-size:14px;transition:border-color .15s;}
+        input:focus{outline:none;border-color:#065f46;}
+        .placeholder-hint{font-size:11px;color:#334155;margin-top:3px;}
+        .btn-salvar{width:100%;padding:12px;background:#064e3b;color:#6ee7b7;border:1px solid #065f46;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:20px;transition:all .15s;}
+        .btn-salvar:hover{background:#047857;color:white;}
+        .current-meta{background:#0a0f1e;border-radius:8px;padding:12px 14px;margin-bottom:20px;border:1px solid #1e293b;}
+        .current-title{font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+        .current-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #0f172a;font-size:13px;}
+        .current-row:last-child{border-bottom:none;}
+        .current-label{color:#64748b;}
+        .current-val{color:#22c55e;font-weight:700;}
+        #loader{position:fixed;inset:0;z-index:9999;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s ease;}
+    
+        /* ── MOBILE RESPONSIVO ── */
+        @media (max-width: 640px) {
+            body { overflow-x: hidden; padding: 16px 14px !important; }
+            h1 { font-size: 18px !important; }
+
+            /* Nav / topo */
+            .nav, .topo { flex-wrap: wrap; gap: 8px; }
+            .topo-acoes { flex-wrap: wrap; }
+            .brand { font-size: 16px !important; }
+
+            /* Header cards */
+            .header { padding: 16px 18px !important; flex-direction: column; align-items: flex-start !important; }
+            .header h1 { font-size: 20px !important; }
+            .header-btns { width: 100%; }
+            .header-btns .btn, .header-btns a { flex: 1; justify-content: center; font-size: 12px !important; padding: 8px 10px !important; }
+
+            /* Grids viram coluna única */
+            .grid-3, .grid-2, .kpi-grid { grid-template-columns: 1fr !important; }
+            .check-cols { grid-template-columns: 1fr !important; }
+            .metricas-grid { grid-template-columns: 1fr 1fr !important; }
+
+            /* Tabelas — scroll horizontal */
+            .table-wrap, table { overflow-x: auto; display: block; -webkit-overflow-scrolling: touch; }
+            table { min-width: 480px; }
+
+            /* Formulários */
+            .card, .box { padding: 20px 16px !important; }
+            .layout { grid-template-columns: 1fr !important; }
+
+            /* Botões de ação empilham */
+            .acoes { flex-wrap: wrap; gap: 6px; }
+            .acoes .btn-ver { flex: 1; text-align: center; }
+
+            /* Semana bar */
+            .semana-bar { flex-direction: column; align-items: flex-start !important; gap: 8px !important; }
+            .semana-bar select { width: 100%; }
+            .status-badge { margin-left: 0 !important; }
+
+            /* Período bar relatório */
+            .periodo-bar { flex-wrap: wrap; gap: 8px; }
+
+            /* Calendário */
+            .cal-wrap { padding: 12px !important; }
+            .fc .fc-toolbar { flex-direction: column; gap: 8px; }
+            .fc .fc-toolbar-title { font-size: 14px !important; }
+
+            /* Checklist */
+            .checklist-card { padding: 16px !important; }
+
+            /* IA card */
+            .ia-card { padding: 16px !important; }
+            .ia-tabs { gap: 6px; }
+            .ia-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Hist tabs */
+            .hist-tabs { gap: 6px; }
+            .hist-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Ganchos grid */
+            .ganchos-grid { grid-template-columns: 1fr !important; }
+            .stats-row { flex-direction: column; }
+
+            /* Filtros */
+            .filtros { gap: 6px; }
+            .filtro-btn { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Login/cadastro/setup */
+            .box { max-width: 100% !important; }
+
+            /* Charts — altura menor no mobile */
+            .chart-wrap { height: 130px !important; }
+
+            /* Modal */
+            .modal { width: 95% !important; padding: 20px !important; }
+
+            /* Painel lateral vira coluna */
+            .painel { order: 2; }
+            .cal-wrap { order: 1; }
+
+            /* Botões de submit full width */
+            .btn-submit, .btn-salvar, .btn-entrar, .btn-cadastrar, .btn { width: 100%; }
+
+            /* Overflow geral */
+            * { max-width: 100%; }
+            pre { white-space: pre-wrap; word-break: break-word; }
+        }
+
+        @media (max-width: 400px) {
+            body { padding: 12px 10px !important; }
+            .met-val { font-size: 15px !important; }
+            .kpi-val { font-size: 20px !important; }
+            thead th { font-size: 9px !important; padding: 7px 8px !important; }
+            td { font-size: 11px !important; padding: 7px 8px !important; }
+        }
+
+        </style>
+</head>
+<body>
+
+<div id="loader">
+    <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">📊</span><span style="font-size:20px;font-weight:700;color:white;">Amigo Gestor</span></div>
+    <div style="width:180px;height:3px;background:#1e293b;border-radius:99px;overflow:hidden;"><div id="loader-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:99px;transition:width .5s ease;"></div></div>
+    <span style="font-size:13px;color:#475569;" id="loader-txt">Carregando...</span>
+</div>
+
+<a class="voltar" href="/cliente/{{ cliente[0] }}">← Voltar</a>
+<span class="canal-tag">🎯 METAS DE PERFORMANCE</span>
+<h1>{{ cliente[1] }}</h1>
+<p class="seg">{{ cliente[2] }}</p>
+
+{% if meta %}
+<div class="card" style="margin-bottom:16px;">
+    <div class="current-title">Metas atuais</div>
+    {% if meta[2] %}<div class="current-row"><span class="current-label">ROAS mínimo</span><span class="current-val">{{ meta[2] }}</span></div>{% endif %}
+    {% if meta[3] %}<div class="current-row"><span class="current-label">CPA máximo</span><span class="current-val">R$ {{ meta[3] }}</span></div>{% endif %}
+    {% if meta[4] %}<div class="current-row"><span class="current-label">CTR mínimo</span><span class="current-val">{{ meta[4] }}%</span></div>{% endif %}
+    {% if meta[5] %}<div class="current-row"><span class="current-label">Retenção Reels mínima</span><span class="current-val">{{ meta[5] }}%</span></div>{% endif %}
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-title">{{ 'Atualizar' if meta else 'Definir' }} metas</div>
+    <form action="/metas/{{ cliente[0] }}" method="POST">
+        <label>ROAS mínimo (Meta + Google)</label>
+        <input type="number" step="0.1" name="roas_meta" placeholder="Ex: 3.0" value="{{ meta[2] if meta and meta[2] else '' }}">
+        <div class="placeholder-hint">Abaixo disso = alerta vermelho no review</div>
+
+        <label style="margin-top:14px;">CPA máximo (R$)</label>
+        <input type="number" step="0.01" name="cpa_meta" placeholder="Ex: 50.00" value="{{ meta[3] if meta and meta[3] else '' }}">
+
+        <label style="margin-top:14px;">CTR mínimo (%)</label>
+        <input type="number" step="0.1" name="ctr_meta" placeholder="Ex: 2.0" value="{{ meta[4] if meta and meta[4] else '' }}">
+
+        <label style="margin-top:14px;">Retenção mínima nos Reels (%)</label>
+        <input type="number" step="0.1" name="retencao_meta" placeholder="Ex: 35.0" value="{{ meta[5] if meta and meta[5] else '' }}">
+
+        <button class="btn-salvar" type="submit">💾 Salvar metas</button>
+    </form>
+</div>
+
+<script>
+(function(){var bar=document.getElementById('loader-bar'),txt=document.getElementById('loader-txt'),loader=document.getElementById('loader'),p=0;var iv=setInterval(function(){p=Math.min(p+Math.random()*18+5,88);bar.style.width=p+'%';},180);window.addEventListener('load',function(){clearInterval(iv);bar.style.width='100%';txt.textContent='Pronto!';setTimeout(function(){loader.style.opacity='0';setTimeout(function(){loader.style.display='none';},400);},200);});})();
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ cliente[1] }}</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden;
+            font-family: Arial, sans-serif;
+            background: #0a0f1e;
+            margin: 0;
+            padding: 24px;
+            color: white;
+        }
+        .topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        h1 { font-size: 22px; margin: 0; }
+        .seg { color: #94a3b8; font-size: 14px; margin-bottom: 24px; }
+        .acoes {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        @media(max-width:640px){
+            .acoes .btn { flex: 1; min-width: 120px; text-align: center; justify-content: center; font-size: 12px !important; padding: 8px 10px !important; }
+            .cliente-header { padding: 16px !important; }
+        }
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-inserir { background: #1e3a5f; color: white; }
+        .btn-inserir:hover { background: #1e40af; }
+        .btn-relatorio { background: #065f46; color: white; }
+        .btn-relatorio:hover { background: #047857; }
+        .voltar { color: #94a3b8; text-decoration: none; font-size: 14px; }
+        .secao { margin-bottom: 32px; }
+        .secao-titulo {
+            font-size: 15px;
+            font-weight: bold;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #1e293b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            overflow-x: auto;
+            display: block;
+        }
+        th {
+            text-align: left;
+            padding: 8px 12px;
+            background: #1e293b;
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #1e293b;
+            white-space: nowrap;
+        }
+        tr:hover td { background: #1e293b; }
+        .btn-editar {
+            padding: 4px 10px;
+            background: #334155;
+            color: #94a3b8;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .btn-editar:hover { background: #475569; color: white; }
+        .vazio { color: #475569; font-size: 14px; }
+    
+        /* ── MOBILE RESPONSIVO ── */
+        @media (max-width: 640px) {
+            body { padding: 16px 14px !important; }
+            h1 { font-size: 18px !important; }
+
+            /* Nav / topo */
+            .nav, .topo { flex-wrap: wrap; gap: 8px; }
+            .topo-acoes { flex-wrap: wrap; }
+            .brand { font-size: 16px !important; }
+
+            /* Header cards */
+            .header { padding: 16px 18px !important; flex-direction: column; align-items: flex-start !important; }
+            .header h1 { font-size: 20px !important; }
+            .header-btns { width: 100%; }
+            .header-btns .btn, .header-btns a { flex: 1; justify-content: center; font-size: 12px !important; padding: 8px 10px !important; }
+
+            /* Grids viram coluna única */
+            .grid-3, .grid-2, .kpi-grid { grid-template-columns: 1fr !important; }
+            .check-cols { grid-template-columns: 1fr !important; }
+            .metricas-grid { grid-template-columns: 1fr 1fr !important; }
+
+            /* Tabelas — scroll horizontal */
+            .table-wrap, table { overflow-x: auto; display: block; -webkit-overflow-scrolling: touch; }
+            table { min-width: 480px; }
+
+            /* Formulários */
+            .card, .box { padding: 20px 16px !important; }
+            .layout { grid-template-columns: 1fr !important; }
+
+            /* Botões de ação empilham */
+            .acoes { flex-wrap: wrap; gap: 6px; }
+            .acoes .btn-ver { flex: 1; text-align: center; }
+
+            /* Semana bar */
+            .semana-bar { flex-direction: column; align-items: flex-start !important; gap: 8px !important; }
+            .semana-bar select { width: 100%; }
+            .status-badge { margin-left: 0 !important; }
+
+            /* Período bar relatório */
+            .periodo-bar { flex-wrap: wrap; gap: 8px; }
+
+            /* Calendário */
+            .cal-wrap { padding: 12px !important; }
+            .fc .fc-toolbar { flex-direction: column; gap: 8px; }
+            .fc .fc-toolbar-title { font-size: 14px !important; }
+
+            /* Checklist */
+            .checklist-card { padding: 16px !important; }
+
+            /* IA card */
+            .ia-card { padding: 16px !important; }
+            .ia-tabs { gap: 6px; }
+            .ia-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Hist tabs */
+            .hist-tabs { gap: 6px; }
+            .hist-tab { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Ganchos grid */
+            .ganchos-grid { grid-template-columns: 1fr !important; }
+            .stats-row { flex-direction: column; }
+
+            /* Filtros */
+            .filtros { gap: 6px; }
+            .filtro-btn { font-size: 11px !important; padding: 5px 10px !important; }
+
+            /* Login/cadastro/setup */
+            .box { max-width: 100% !important; }
+
+            /* Charts — altura menor no mobile */
+            .chart-wrap { height: 130px !important; }
+
+            /* Modal */
+            .modal { width: 95% !important; padding: 20px !important; }
+
+            /* Painel lateral vira coluna */
+            .painel { order: 2; }
+            .cal-wrap { order: 1; }
+
+            /* Botões de submit full width */
+            .btn-submit, .btn-salvar, .btn-entrar, .btn-cadastrar, .btn { width: 100%; }
+
+            /* Overflow geral */
+            * { max-width: 100%; }
+            pre { white-space: pre-wrap; word-break: break-word; }
+        }
+
+        @media (max-width: 400px) {
+            body { padding: 12px 10px !important; }
+            .met-val { font-size: 15px !important; }
+            .kpi-val { font-size: 20px !important; }
+            thead th { font-size: 9px !important; padding: 7px 8px !important; }
+            td { font-size: 11px !important; padding: 7px 8px !important; }
+        }
+
+        </style>
+</head>
+<body>
+    <div id="loader" style="position:fixed;inset:0;z-index:9999;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s ease;">
+        <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">📊</span><span style="font-size:20px;font-weight:700;color:white;">Amigo Gestor</span></div>
+        <div style="width:180px;height:3px;background:#1e293b;border-radius:99px;overflow:hidden;"><div id="loader-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:99px;transition:width .5s ease;"></div></div>
+        <span style="font-size:13px;color:#475569;" id="loader-txt">Carregando...</span>
+    </div>
+
+    <a class="voltar" href="/">← Voltar</a>
+
+    <div class="topo" style="margin-top: 16px;">
+        <h1>{{ cliente[1] }}</h1>
+    </div>
+    <p class="seg">{{ cliente[2] }}</p>
+
+    <div class="acoes">
+        <a class="btn btn-inserir" href="/inserir/{{ cliente[0] }}">+ Inserir métricas</a>
+        <a class="btn btn-relatorio" href="/review/{{ cliente[0] }}">📋 Review Semanal</a>
+        <a class="btn" style="background:#064e3b;color:#6ee7b7;border:1px solid #065f46;" href="/relatorio/{{ cliente[0] }}">📊 Relatório BI</a>
+        <a class="btn" style="background:#1a0a2e;color:#c4b5fd;border:1px solid #4c1d95;" href="/ganchos/{{ cliente[0] }}">🪝 Ganchos</a>
+        <a class="btn" style="background:#0d1f3c;color:#93c5fd;border:1px solid #1e3a5f;" href="/calendario/{{ cliente[0] }}">📅 Calendário</a>
+        <a class="btn" style="background:#0a2218;color:#4ade80;border:1px solid #14532d;" href="/metas/{{ cliente[0] }}">🎯 Metas</a>
+    </div>
+
+
+    <!-- Semáforo de metas -->
+    {% if metas %}
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+        {% if metas[2] and meta %}
+        {% set ultimo_roas_meta = meta[0][6]|float if meta else 0 %}
+        <div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:16px;">{% if ultimo_roas_meta >= metas[2]|float %}🟢{% elif ultimo_roas_meta >= metas[2]|float * 0.8 %}🟡{% else %}🔴{% endif %}</span>
+            <div><div style="font-size:11px;color:#475569;">ROAS meta: {{ metas[2] }}</div><div style="font-size:14px;font-weight:700;">Atual: {{ meta[0][6] if meta else '—' }}</div></div>
+        </div>
+        {% endif %}
+        {% if metas[5] and reels %}
+        {% set ultima_ret = reels[0][4]|float if reels else 0 %}
+        <div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:16px;">{% if ultima_ret >= metas[5]|float %}🟢{% elif ultima_ret >= metas[5]|float * 0.8 %}🟡{% else %}🔴{% endif %}</span>
+            <div><div style="font-size:11px;color:#475569;">Retenção meta: {{ metas[5] }}%</div><div style="font-size:14px;font-weight:700;">Atual: {{ reels[0][4] if reels else '—' }}%</div></div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Meta Ads -->
+    <div class="secao">
+        <div class="secao-titulo">📘 Meta Ads</div>
+        {% if meta %}
+        <table>
+            <tr>
+                <th>Data</th><th>CPM</th><th>CPC</th><th>CTR%</th>
+                <th>ROAS</th><th>CPA</th><th>Freq.</th><th>Conv.</th><th></th>
+            </tr>
+            {% for m in meta %}
+            <tr>
+                <td>{{ m[2] }}</td>
+                <td>R$ {{ m[3] }}</td>
+                <td>R$ {{ m[4] }}</td>
+                <td>{{ m[5] }}%</td>
+                <td>{{ m[6] }}</td>
+                <td>R$ {{ m[7] }}</td>
+                <td>{{ m[8] }}</td>
+                <td>{{ m[9] }}</td>
+                <td><a class="btn-editar" href="/editar/meta/{{ m[0] }}">✏️ Editar</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="vazio">Nenhuma métrica inserida ainda.</p>
+        {% endif %}
+    </div>
+
+    <!-- Google Ads -->
+    <div class="secao">
+        <div class="secao-titulo">🔍 Google Ads</div>
+        {% if google %}
+        <table>
+            <tr>
+                <th>Data</th><th>Impressões</th><th>CTR%</th><th>CPC</th>
+                <th>CPA</th><th>ROAS</th><th>Conv.</th><th>Parcela%</th><th></th>
+            </tr>
+            {% for g in google %}
+            <tr>
+                <td>{{ g[2] }}</td>
+                <td>{{ g[3] }}</td>
+                <td>{{ g[4] }}%</td>
+                <td>R$ {{ g[5] }}</td>
+                <td>R$ {{ g[6] }}</td>
+                <td>{{ g[7] }}</td>
+                <td>{{ g[8] }}</td>
+                <td>{{ g[9] }}%</td>
+                <td><a class="btn-editar" href="/editar/google/{{ g[0] }}">✏️ Editar</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="vazio">Nenhuma métrica inserida ainda.</p>
+        {% endif %}
+    </div>
+
+    <!-- Reels -->
+    <div class="secao">
+        <div class="secao-titulo">🎬 Instagram Reels</div>
+        {% if reels %}
+        <table>
+            <tr>
+                <th>Data</th><th>Vídeo</th><th>Views</th><th>Retenção%</th>
+                <th>Alcance</th><th>Curtidas</th><th>Coment.</th>
+                <th>Compart.</th><th>Salvam.</th><th></th>
+            </tr>
+            {% for r in reels %}
+            <tr>
+                <td>{{ r[2] }}</td>
+                <td>{{ r[3] }}</td>
+                <td>{{ r[4] }}</td>
+                <td>{{ r[5] }}%</td>
+                <td>{{ r[6] }}</td>
+                <td>{{ r[7] }}</td>
+                <td>{{ r[8] }}</td>
+                <td>{{ r[9] }}</td>
+                <td>{{ r[10] }}</td>
+                <td><a class="btn-editar" href="/editar/reels/{{ r[0] }}">✏️ Editar</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="vazio">Nenhuma métrica inserida ainda.</p>
+        {% endif %}
+    </div>
+    <script>
+    (function(){var bar=document.getElementById('loader-bar'),txt=document.getElementById('loader-txt'),loader=document.getElementById('loader'),p=0,i=0;var msgs=['Carregando...','Buscando dados...','Quase lá...'];var iv=setInterval(function(){p=Math.min(p+Math.random()*18+5,88);bar.style.width=p+'%';if(i<msgs.length-1&&p>40+i*25){i++;txt.textContent=msgs[i];}},180);window.addEventListener('load',function(){clearInterval(iv);bar.style.width='100%';txt.textContent='Pronto!';setTimeout(function(){loader.style.opacity='0';setTimeout(function(){loader.style.display='none';},400);},200);});document.querySelectorAll('a[href]').forEach(function(a){var href=a.getAttribute('href');if(href&&!href.startsWith('#')&&!href.startsWith('javascript')){a.addEventListener('click',function(){loader.style.display='flex';loader.style.opacity='1';bar.style.width='0%';p=0;i=0;txt.textContent='Carregando...';setInterval(function(){p=Math.min(p+Math.random()*20+8,85);bar.style.width=p+'%';},150);});}});})();
+    </script>
+</body>
+</html>
