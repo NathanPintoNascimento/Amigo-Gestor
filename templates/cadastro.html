@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"><title>Cadastro — Amigo Gestor</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;min-height:100vh;padding:24px 16px;}
+.wrap{width:100%;max-width:420px;margin:0 auto;}
+.back{color:#475569;text-decoration:none;font-size:14px;display:inline-flex;align-items:center;gap:6px;margin-bottom:20px;}
+h1{font-size:20px;font-weight:700;margin-bottom:20px;}
+.canal-tag{display:inline-block;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;margin-bottom:16px;}
+.card{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:20px 18px;}
+.card-title{font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px;}
+.logo{text-align:center;font-size:22px;font-weight:700;margin-bottom:6px;}
+.subtitulo{text-align:center;font-size:13px;color:#475569;margin-bottom:24px;}
+label{display:block;font-size:12px;color:#64748b;margin-bottom:5px;margin-top:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+label:first-of-type{margin-top:0;}
+input,select,textarea{width:100%;padding:12px 14px;background:#0a0f1e;border:1px solid #1e293b;border-radius:9px;color:#e2e8f0;font-size:15px;font-family:inherit;transition:border-color .15s;-webkit-appearance:none;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#2d5a9e;}
+input::placeholder,textarea::placeholder{color:#334155;}
+select{cursor:pointer;background-image:none;}
+textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.hint{font-size:11px;color:#334155;margin-top:4px;}
+.btn-primary{width:100%;padding:14px;background:#1e3a5f;color:#93c5fd;border:1px solid #2d5a9e;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-top:16px;font-family:inherit;-webkit-appearance:none;transition:all .15s;}
+.btn-primary:active{background:#1e40af;color:white;}
+.btn-secondary{width:100%;padding:12px;background:transparent;color:#64748b;border:1px solid #1e293b;border-radius:10px;font-size:14px;cursor:pointer;margin-top:8px;font-family:inherit;}
+.btn-secondary:active{background:#450a0a;color:#f87171;border-color:#7f1d1d;}
+.alerta{border-radius:9px;padding:10px 14px;font-size:13px;margin-bottom:16px;}
+.alerta.erro{background:#450a0a;color:#fca5a5;border:1px solid #7f1d1d;}
+.alerta.ok{background:#052e16;color:#4ade80;border:1px solid #14532d;}
+.divisor{border:none;border-top:1px solid #1e293b;margin:16px 0;}
+.rodape{text-align:center;margin-top:20px;font-size:13px;color:#475569;}
+.rodape a{color:#93c5fd;text-decoration:none;}
+.esqueci{display:block;text-align:right;font-size:12px;color:#475569;margin-top:6px;text-decoration:none;}
+.forca{display:flex;gap:4px;margin-top:8px;}
+.forca-bar{height:4px;flex:1;border-radius:2px;background:#1e293b;transition:background .3s;}
+#loader{position:fixed;inset:0;z-index:9999;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s;}
+@media(min-width:641px){body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:40px 24px;}}</style>
+</head>
+<body>
+<div id="loader">
+<div style="display:flex;align-items:center;gap:10px;">
+<span style="font-size:22px;">📊</span>
+<span style="font-size:20px;font-weight:700;">Amigo Gestor</span>
+</div>
+<div style="width:160px;height:3px;background:#1e293b;border-radius:99px;overflow:hidden;">
+<div id="lbar" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:99px;transition:width .5s;">
+</div>
+</div>
+<span style="font-size:12px;color:#475569;" id="ltxt">Carregando...</span>
+</div>
+<div class="wrap">
+  <div class="logo">
+📊 Amigo Gestor</div>
+  <div class="subtitulo">
+Crie sua conta</div>
+  {% if erro %}<div class="alerta erro">
+⚠️ {{ erro }}</div>
+{% endif %}
+  {% if sucesso %}<div class="alerta ok">
+✓ {{ sucesso }}</div>
+{% endif %}
+  {% if not sucesso %}
+  <div class="card">
+    <form method="POST" action="/cadastro">
+      <label>Seu nome</label>
+      <input type="text" name="nome" placeholder="Ex: João Silva" required autocomplete="name">
+      <label>E-mail</label>
+      <input type="email" name="email" placeholder="voce@email.com" required autocomplete="email">
+      <label>Senha</label>
+      <input type="password" name="senha" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+      <div class="hint">
+Use ao menos 6 caracteres.</div>
+      <label>Confirmar senha</label>
+      <input type="password" name="senha_confirm" placeholder="Repita a senha" required autocomplete="new-password">
+      <hr class="divisor">
+      <button type="submit" class="btn-primary">Criar conta →</button>
+    </form>
+  </div>
+  {% endif %}
+  <div class="rodape">
+Já tem conta? <a href="/login">Entrar</a>
+</div>
+</div>
+<script>
+(function(){var b=document.getElementById('lbar'),t=document.getElementById('ltxt'),l=document.getElementById('loader'),p=0;var iv=setInterval(function(){p=Math.min(p+Math.random()*20+5,88);b.style.width=p+'%';},200);window.addEventListener('load',function(){clearInterval(iv);b.style.width='100%';t.textContent='Pronto!';setTimeout(function(){l.style.opacity='0';setTimeout(function(){l.style.display='none';},400);},200);});document.querySelectorAll('a[href],button[type=submit]').forEach(function(el){el.addEventListener('click',function(){l.style.display='flex';l.style.opacity='1';b.style.width='0%';p=0;setInterval(function(){p=Math.min(p+20,85);b.style.width=p+'%';},150);});});})()</script>
+</body>
+</html>

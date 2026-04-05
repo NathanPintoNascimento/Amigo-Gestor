@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Google Ads</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0a0f1e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+            color: white;
+        }
+        h1 { font-size: 22px; margin-bottom: 24px; }
+        .canal-tag { display: inline-block; border-radius: 20px; padding: 3px 14px; font-size: 11px; font-weight: 700; letter-spacing: .06em; margin-bottom: 16px; }
+        .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 14px; padding: 28px; width: 100%; max-width: 440px; }
+        label { font-size: 13px; color: #64748b; display: block; margin-bottom: 5px; margin-top: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+        label:first-of-type { margin-top: 0; }
+        input { width: 100%; padding: 11px 14px; border: 1px solid #1e293b; border-radius: 9px; font-size: 14px; background: #0a0f1e; color: white; transition: border-color .15s; }
+        .btn-save { width: 100%; padding: 13px; border-radius: 9px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: all .15s; border: 1px solid; }
+        .btn-del { width: 100%; padding: 11px; background: transparent; color: #475569; border: 1px solid #1e293b; border-radius: 9px; font-size: 14px; cursor: pointer; margin-top: 8px; transition: all .15s; }
+        .btn-del:hover { background: #450a0a; color: #f87171; border-color: #7f1d1d; }
+        .voltar { color: #475569; text-decoration: none; margin-bottom: 20px; display: inline-block; font-size: 14px; }
+        .voltar:hover { color: #94a3b8; }
+        @media (max-width: 600px) { body { justify-content: flex-start; padding: 20px 16px; } .card { padding: 20px 18px; max-width: 100%; } }
+        input:focus { border-color: #d97706; }
+    </style>
+</head>
+<body>
+    <div id="loader" style="position:fixed;inset:0;z-index:9999;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s ease;">
+        <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">📊</span><span style="font-size:20px;font-weight:700;color:white;">Amigo Gestor</span></div>
+        <div style="width:160px;height:3px;background:#1e293b;border-radius:99px;overflow:hidden;"><div id="lbar" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:99px;transition:width .5s;"></div></div>
+        <span style="font-size:12px;color:#475569;" id="ltxt">Carregando...</span>
+    </div>
+    <a class="voltar" href="javascript:history.back()">&#8592; Voltar</a>
+    <span class="canal-tag" style="background:#3a2800;color:#f59e0b;">&#128269; GOOGLE ADS</span>
+    <h1>Editar Google Ads</h1>
+    <div class="card">
+        {# indices: [3]=impressoes [4]=ctr [5]=cpc [6]=cpa [7]=roas [8]=conversoes [9]=parcela #}
+        <form action="/editar/google/{{ m[0] }}" method="POST">
+            <label>Data</label>
+            <input type="date" name="data" value="{{ m[2] }}" required>
+
+            <label>Impress&#245;es</label>
+            <input type="number" name="impressoes" value="{{ m[3] or '' }}" placeholder="Ex: 15000">
+
+            <label>CTR (%)</label>
+            <input type="number" step="0.01" name="ctr" value="{{ m[4] or '' }}" placeholder="Ex: 4.2">
+
+            <label>CPC (R$)</label>
+            <input type="number" step="0.01" name="cpc" value="{{ m[5] or '' }}" placeholder="Ex: 2.10">
+
+            <label>CPA (R$)</label>
+            <input type="number" step="0.01" name="cpa" value="{{ m[6] or '' }}" placeholder="Ex: 38.00">
+
+            <label>ROAS</label>
+            <input type="number" step="0.01" name="roas" value="{{ m[7] or '' }}" placeholder="Ex: 4.1">
+
+            <label>Convers&#245;es</label>
+            <input type="number" name="conversoes" value="{{ m[8] or '' }}" placeholder="Ex: 52">
+
+            <label>Parcela de impress&#227;o (%)</label>
+            <input type="number" step="0.01" name="parcela_impressao" value="{{ m[9] or '' }}" placeholder="Ex: 68.5">
+
+            <button type="submit" class="btn-save" style="background:#3a2800;color:#f59e0b;border-color:#78350f;">Salvar altera&#231;&#245;es</button>
+        </form>
+        <form action="/excluir/google/{{ m[0] }}" method="POST" onsubmit="return confirm('Excluir esta m&#233;trica?')">
+            <button type="submit" class="btn-del">&#128465; Excluir esta m&#233;trica</button>
+        </form>
+    </div>
+    <script>
+    (function(){
+        var b=document.getElementById('lbar'),t=document.getElementById('ltxt'),l=document.getElementById('loader'),p=0;
+        var iv=setInterval(function(){p=Math.min(p+Math.random()*20+5,88);b.style.width=p+'%';},200);
+        window.addEventListener('load',function(){clearInterval(iv);b.style.width='100%';t.textContent='Pronto!';setTimeout(function(){l.style.opacity='0';setTimeout(function(){l.style.display='none';},400);},200);});
+        document.querySelectorAll('a[href],button[type=submit]').forEach(function(el){el.addEventListener('click',function(){l.style.display='flex';l.style.opacity='1';b.style.width='0%';p=0;setInterval(function(){p=Math.min(p+20,85);b.style.width=p+'%';},150);});});
+    })();
+    </script>
+</body>
+</html>

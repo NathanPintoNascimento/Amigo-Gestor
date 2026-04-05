@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"><title>Inserir Métricas</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;min-height:100vh;padding:20px 16px;}
+.wrap{width:100%;max-width:480px;margin:0 auto;}
+.back{color:#475569;text-decoration:none;font-size:14px;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;}
+h1{font-size:19px;font-weight:700;margin-bottom:18px;}
+.card{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:18px 16px;}
+label{display:block;font-size:12px;color:#64748b;margin-bottom:5px;margin-top:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+label:first-of-type{margin-top:0;}
+input,select{width:100%;padding:12px 14px;background:#0a0f1e;border:1px solid #1e293b;border-radius:9px;color:#e2e8f0;font-size:15px;font-family:inherit;transition:border-color .15s;-webkit-appearance:none;}
+input:focus,select:focus{outline:none;border-color:#2d5a9e;}
+input::placeholder{color:#334155;}
+select{cursor:pointer;}
+.secao{font-size:11px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 12px;padding-top:16px;border-top:1px solid #1e293b;}
+.campos-canal{display:none;}
+.btn-save{width:100%;padding:14px;background:#1e3a5f;color:#93c5fd;border:1px solid #2d5a9e;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-top:16px;font-family:inherit;transition:all .15s;}
+.btn-save:active{background:#1e40af;color:white;}
+#loader{position:fixed;inset:0;z-index:9999;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s;}
+@media(min-width:641px){body{display:flex;flex-direction:column;align-items:center;padding:40px 24px;}}
+</style></head>
+<body><div id="loader"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">📊</span><span style="font-size:20px;font-weight:700;">Amigo Gestor</span></div><div style="width:160px;height:3px;background:#1e293b;border-radius:99px;overflow:hidden;"><div id="lbar" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:99px;transition:width .5s;"></div></div><span style="font-size:12px;color:#475569;" id="ltxt">Carregando...</span></div>
+<div class="wrap">
+  <a class="back" href="/cliente/{{ id }}">← Voltar</a>
+  <h1>📥 Inserir Métricas</h1>
+  <div class="card">
+    <form action="/inserir/{{ id }}" method="POST">
+      <label>Data da semana</label>
+      <input type="date" name="data" required>
+      <label>Canal</label>
+      <select name="canal" id="canal" onchange="mostrar(this.value)">
+        <option value="" disabled selected>Selecione o canal...</option>
+        <option value="meta">📘 Meta Ads</option>
+        <option value="google">🔍 Google Ads</option>
+        <option value="reels">🎬 Instagram Reels</option>
+      </select>
+
+      <div class="campos-canal" id="campos-meta">
+        <p class="secao">Meta Ads</p>
+        <label>CPM (R$)</label><input type="number" step="0.01" name="cpm" placeholder="Ex: 12.50">
+        <label>CPC (R$)</label><input type="number" step="0.01" name="cpc" placeholder="Ex: 1.80">
+        <label>CTR (%)</label><input type="number" step="0.01" name="ctr" placeholder="Ex: 2.5">
+        <label>ROAS</label><input type="number" step="0.01" name="roas" placeholder="Ex: 3.2">
+        <label>CPA (R$)</label><input type="number" step="0.01" name="cpa" placeholder="Ex: 45.00">
+        <label>Frequência</label><input type="number" step="0.01" name="frequencia" placeholder="Ex: 2.1">
+        <label>Conversões</label><input type="number" name="conversoes" placeholder="Ex: 38">
+      </div>
+
+      <div class="campos-canal" id="campos-google">
+        <p class="secao">Google Ads</p>
+        <label>Impressões</label><input type="number" name="impressoes" placeholder="Ex: 15000">
+        <label>CTR (%)</label><input type="number" step="0.01" name="ctr" placeholder="Ex: 4.2">
+        <label>CPC (R$)</label><input type="number" step="0.01" name="cpc" placeholder="Ex: 2.10">
+        <label>CPA (R$)</label><input type="number" step="0.01" name="cpa" placeholder="Ex: 38.00">
+        <label>ROAS</label><input type="number" step="0.01" name="roas" placeholder="Ex: 4.1">
+        <label>Conversões</label><input type="number" name="conversoes" placeholder="Ex: 52">
+        <label>Parcela de impressão (%)</label><input type="number" step="0.01" name="parcela_impressao" placeholder="Ex: 68.5">
+      </div>
+
+      <div class="campos-canal" id="campos-reels">
+        <p class="secao">Instagram Reels</p>
+        <label>Nome do vídeo</label><input type="text" name="nome_video" placeholder="Ex: Reel semana 1">
+        <label>Views</label><input type="number" name="views" placeholder="Ex: 8500">
+        <label>Retenção (%)</label><input type="number" step="0.01" name="retencao" placeholder="Ex: 35.0">
+        <label>Alcance</label><input type="number" name="alcance" placeholder="Ex: 6200">
+        <label>Curtidas</label><input type="number" name="curtidas" placeholder="Ex: 420">
+        <label>Comentários</label><input type="number" name="comentarios" placeholder="Ex: 38">
+        <label>Compartilhamentos</label><input type="number" name="compartilhamentos" placeholder="Ex: 95">
+        <label>Salvamentos</label><input type="number" name="salvamentos" placeholder="Ex: 210">
+      </div>
+
+      <button type="submit" class="btn-save">Salvar métricas</button>
+    </form>
+  </div>
+</div>
+<script>
+function mostrar(c){
+    document.querySelectorAll('.campos-canal').forEach(function(el){el.style.display='none';});
+    if(c) document.getElementById('campos-'+c).style.display='block';
+}
+</script>
+<script>(function(){var b=document.getElementById('lbar'),t=document.getElementById('ltxt'),l=document.getElementById('loader'),p=0;var iv=setInterval(function(){p=Math.min(p+Math.random()*20+5,88);b.style.width=p+'%';},200);window.addEventListener('load',function(){clearInterval(iv);b.style.width='100%';t.textContent='Pronto!';setTimeout(function(){l.style.opacity='0';setTimeout(function(){l.style.display='none';},400);},200);});})();</script>
+</body></html>

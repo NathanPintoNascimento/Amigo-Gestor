@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajuda — Amigo Gestor</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;min-height:100vh;padding:24px;}
+        .nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+        .voltar{color:#475569;text-decoration:none;font-size:14px;transition:color .15s;}
+        .voltar:hover{color:#94a3b8;}
+        .brand{font-size:13px;color:#334155;font-weight:700;letter-spacing:.06em;}
+
+        .layout{display:grid;grid-template-columns:300px 1fr;gap:20px;max-width:1100px;margin:0 auto;}
+
+        .mascote-col{display:flex;flex-direction:column;align-items:center;}
+        .mascote-wrap{background:#0f172a;border:1px solid #1e293b;border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;align-items:center;gap:16px;position:sticky;top:24px;}
+        .mascote-svg{width:140px;height:140px;}
+        .mascote-nome{font-size:13px;font-weight:700;color:#93c5fd;letter-spacing:.06em;text-transform:uppercase;}
+        .balao{background:#1e3a5f;border:1px solid #2d5a9e;border-radius:14px;border-bottom-left-radius:4px;padding:14px 16px;font-size:13px;color:#cbd5e1;line-height:1.7;min-height:80px;transition:all .3s ease;}
+        .balao strong{color:#93c5fd;}
+
+        .prog-bar-wrap{width:100%;background:#0a0f1e;border-radius:99px;height:4px;overflow:hidden;margin-top:4px;}
+        .prog-bar-inner{height:100%;background:#3b82f6;border-radius:99px;transition:width .4s ease;}
+        .prog-label{font-size:11px;color:#334155;text-align:right;margin-top:4px;}
+
+        .nav-btns{display:flex;gap:8px;width:100%;}
+        .btn-nav{flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid transparent;}
+        .btn-prev{background:#0f172a;color:#475569;border-color:#1e293b;}
+        .btn-prev:hover{color:#94a3b8;border-color:#334155;}
+        .btn-next{background:#1e3a5f;color:#93c5fd;border-color:#2d5a9e;}
+        .btn-next:hover{background:#1e40af;color:white;}
+        .btn-nav:disabled{opacity:.3;cursor:default;}
+
+        .conteudo-col{}
+        .etapa-card{background:#0f172a;border:1px solid #1e293b;border-radius:16px;padding:28px 30px;margin-bottom:16px;animation:fadeIn .3s ease;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+        .etapa-numero{font-size:11px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+        .etapa-titulo{font-size:20px;font-weight:700;color:#e2e8f0;margin-bottom:14px;line-height:1.3;}
+        .etapa-desc{font-size:14px;color:#94a3b8;line-height:1.8;margin-bottom:20px;}
+        .etapa-desc strong{color:#e2e8f0;}
+
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+        .feat{background:#0a0f1e;border:1px solid #1e293b;border-radius:10px;padding:14px 16px;}
+        .feat-icon{font-size:20px;margin-bottom:8px;display:block;}
+        .feat-titulo{font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:4px;}
+        .feat-desc{font-size:12px;color:#475569;line-height:1.5;}
+
+        .dica{border-left:3px solid #3b82f6;background:#0a0f1e;border-radius:0 10px 10px 0;padding:12px 16px;font-size:13px;color:#94a3b8;line-height:1.6;margin-top:16px;}
+        .dica.verde{border-left-color:#22c55e;}
+        .dica.amarelo{border-left-color:#fbbf24;}
+        .dica.roxo{border-left-color:#a78bfa;}
+        .dica strong{color:#e2e8f0;}
+
+        .etapas-menu{display:flex;flex-direction:column;gap:6px;margin-top:16px;width:100%;}
+        .menu-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:all .15s;border:1px solid transparent;font-size:12px;color:#475569;}
+        .menu-item:hover{background:#111827;color:#94a3b8;}
+        .menu-item.ativo{background:#1e3a5f;color:#93c5fd;border-color:#2d5a9e;}
+        .menu-dot{width:8px;height:8px;border-radius:50%;background:#334155;flex-shrink:0;transition:background .15s;}
+        .menu-item.ativo .menu-dot{background:#3b82f6;}
+        .menu-item.feito .menu-dot{background:#22c55e;}
+        .menu-item.feito{color:#64748b;}
+        .check-badge{display:none;font-size:11px;color:#22c55e;margin-left:auto;}
+        .menu-item.feito .check-badge{display:block;}
+
+        .final-wrap{text-align:center;padding:32px 24px;}
+        .final-icon{font-size:48px;margin-bottom:16px;display:block;}
+        .final-titulo{font-size:22px;font-weight:700;color:#e2e8f0;margin-bottom:10px;}
+        .final-desc{font-size:14px;color:#64748b;line-height:1.7;margin-bottom:24px;}
+        .btn-comecar{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;background:#1e3a5f;color:#93c5fd;border:1px solid #2d5a9e;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;transition:all .15s;cursor:pointer;}
+        .btn-comecar:hover{background:#1e40af;color:white;}
+
+        @keyframes piscar{0%,90%,100%{transform:scaleY(1);}95%{transform:scaleY(0.08);}}
+        .olho{animation:piscar 4s infinite;}
+        .olho-dir{animation-delay:0.08s;}
+        @keyframes flutuar{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+        .mascote-svg{animation:flutuar 3s ease-in-out infinite;}
+
+        /* ── MOBILE ── */
+        @media(max-width:800px){
+            body{padding:16px 14px;}
+            .layout{grid-template-columns:1fr;}
+            .mascote-wrap{position:static;flex-direction:row;flex-wrap:wrap;gap:12px;padding:16px;}
+            .mascote-svg{width:80px;height:80px;flex-shrink:0;}
+            .mascote-nome{display:none;}
+            .balao{flex:1;min-width:200px;font-size:12px;padding:10px 12px;min-height:auto;}
+            .etapas-menu{display:none;}
+            .prog-bar-wrap,.prog-label{display:block;}
+            .mascote-col{order:-1;}
+            .etapa-card{padding:20px 18px;}
+            .etapa-titulo{font-size:17px;}
+            .etapa-desc{font-size:13px;}
+            .features-grid{grid-template-columns:1fr 1fr;}
+            .nav-btns{margin-top:0;}
+        }
+        @media(max-width:480px){
+            .features-grid{grid-template-columns:1fr;}
+            .mascote-wrap{flex-direction:column;align-items:center;}
+            .mascote-svg{width:100px;height:100px;}
+            .balao{width:100%;}
+            .etapa-card{padding:16px 14px;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="nav">
+    <a class="voltar" href="/">← Voltar ao início</a>
+    <span class="brand">AMIGO GESTOR</span>
+</div>
+
+<div class="layout">
+    <div class="mascote-col">
+        <div class="mascote-wrap">
+            <span class="mascote-nome">Guppy, seu guia</span>
+
+            <svg class="mascote-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="70" cy="85" rx="38" ry="32" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5"/>
+                <ellipse cx="28" cy="88" rx="10" ry="6" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5" transform="rotate(-20 28 88)"/>
+                <ellipse cx="112" cy="88" rx="10" ry="6" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5" transform="rotate(20 112 88)"/>
+                <rect x="50" y="78" width="40" height="26" rx="4" fill="#0d1f3c" stroke="#3b82f6" stroke-width="1"/>
+                <rect x="54" y="82" width="14" height="8" rx="2" fill="#1e40af" opacity=".7"/>
+                <rect x="72" y="82" width="14" height="3" rx="1" fill="#334155"/>
+                <rect x="72" y="87" width="10" height="3" rx="1" fill="#334155"/>
+                <rect x="54" y="93" width="32" height="3" rx="1" fill="#22c55e" opacity=".5"/>
+                <circle cx="70" cy="52" r="30" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5"/>
+                <line x1="70" y1="22" x2="70" y2="10" stroke="#3b82f6" stroke-width="2"/>
+                <circle cx="70" cy="8" r="4" fill="#3b82f6"/>
+                <circle cx="70" cy="8" r="2" fill="#93c5fd"/>
+                <rect x="44" y="38" width="52" height="28" rx="10" fill="#0d1f3c" stroke="#3b82f6" stroke-width="1.5"/>
+                <rect x="47" y="41" width="16" height="8" rx="4" fill="#1e3a5f" opacity=".6"/>
+                <g class="olho" style="transform-origin:57px 52px;">
+                    <circle cx="57" cy="52" r="8" fill="#3b82f6" opacity=".9"/>
+                    <circle cx="57" cy="52" r="4" fill="#93c5fd"/>
+                    <circle cx="59" cy="50" r="1.5" fill="white" opacity=".8"/>
+                </g>
+                <g class="olho olho-dir" style="transform-origin:83px 52px;">
+                    <circle cx="83" cy="52" r="8" fill="#3b82f6" opacity=".9"/>
+                    <circle cx="83" cy="52" r="4" fill="#93c5fd"/>
+                    <circle cx="85" cy="50" r="1.5" fill="white" opacity=".8"/>
+                </g>
+                <path d="M 62 62 Q 70 68 78 62" stroke="#93c5fd" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <circle cx="46" cy="60" r="5" fill="#3b82f6" opacity=".2"/>
+                <circle cx="94" cy="60" r="5" fill="#3b82f6" opacity=".2"/>
+                <ellipse cx="55" cy="115" rx="12" ry="6" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5"/>
+                <ellipse cx="85" cy="115" rx="12" ry="6" fill="#1e3a5f" stroke="#2d5a9e" stroke-width="1.5"/>
+            </svg>
+
+            <div class="balao" id="balao">
+                <strong>Ola! Eu sou o Guppy!</strong><br>
+                Vou te guiar por tudo que o Amigo Gestor pode fazer por voce!
+            </div>
+
+            <div style="width:100%;">
+                <div class="prog-bar-wrap"><div class="prog-bar-inner" id="prog-bar" style="width:0%"></div></div>
+                <div class="prog-label" id="prog-label">etapa 0 de 8</div>
+            </div>
+
+            <div class="nav-btns">
+                <button class="btn-nav btn-prev" id="btn-prev" onclick="irPara(etapaAtual-1)" disabled>Anterior</button>
+                <button class="btn-nav btn-next" id="btn-next" onclick="irPara(etapaAtual+1)">Proximo</button>
+            </div>
+
+            <div class="etapas-menu" id="etapas-menu"></div>
+        </div>
+    </div>
+
+    <div class="conteudo-col" id="conteudo"></div>
+</div>
+
+<script>
+var etapaAtual=0;
+
+var etapas=[
+    {
+        menu:'Visao geral',
+        balao:'Bem-vindo ao <strong>Amigo Gestor</strong>! Deixa eu te contar o que esse sistema faz por voce do comeco ao fim.',
+        html:`<div class="etapa-card">
+            <div class="etapa-numero">Introducao · etapa 1 de 8</div>
+            <div class="etapa-titulo">O que e o Amigo Gestor?</div>
+            <div class="etapa-desc">O Amigo Gestor e uma plataforma de <strong>gestao de metricas de marketing digital</strong> para gestores de trafego e agencias. Ele centraliza tudo num so lugar: resultados de Meta Ads, Google Ads e Instagram Reels de cada cliente.</div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">&#128202;</span><div class="feat-titulo">Metricas semanais</div><div class="feat-desc">Registre e acompanhe os resultados de cada canal por semana.</div></div>
+                <div class="feat"><span class="feat-icon">&#128101;</span><div class="feat-titulo">Multi-clientes</div><div class="feat-desc">Gerencie quantos clientes quiser, cada um com seu historico.</div></div>
+                <div class="feat"><span class="feat-icon">&#129302;</span><div class="feat-titulo">Diagnostico com IA</div><div class="feat-desc">Gera prompts prontos para colar no ChatGPT e receber analises.</div></div>
+                <div class="feat"><span class="feat-icon">&#128197;</span><div class="feat-titulo">Calendario</div><div class="feat-desc">Organize reunioes e entregas com envio de convites por e-mail.</div></div>
+            </div>
+            <div class="dica"><strong>Dica:</strong> Tudo que voce registra fica salvo no banco de dados. Sem perda de historico.</div>
+        </div>`
+    },
+    {
+        menu:'Clientes',
+        balao:'Cada cliente e uma pasta separada. O sistema avisa quando faz tempo que voce nao insere metricas.',
+        html:`<div class="etapa-card">
+            <div class="etapa-numero">Clientes · etapa 2 de 8</div>
+            <div class="etapa-titulo">Cadastrando e gerenciando clientes</div>
+            <div class="etapa-desc">Na tela inicial voce ve todos os seus clientes em cards. Cada card mostra nome, segmento e um <strong>alerta de status</strong>: verde (atualizado), laranja (+10 dias sem dados) ou vermelho (sem dados nunca).</div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">&#43;&#65039;</span><div class="feat-titulo">Novo cliente</div><div class="feat-desc">Clique em "+ Novo Cliente" para cadastrar nome, segmento e e-mail.</div></div>
+                <div class="feat"><span class="feat-icon">&#128193;</span><div class="feat-titulo">Ver cliente</div><div class="feat-desc">Clique em "Ver" para acessar o historico completo de metricas.</div></div>
+                <div class="feat"><span class="feat-icon">&#128465;&#65039;</span><div class="feat-titulo">Excluir</div><div class="feat-desc">O lixeiro apaga o cliente e todos os dados vinculados. Confirme antes!</div></div>
+                <div class="feat"><span class="feat-icon">&#128308;</span><div class="feat-titulo">Alertas</div><div class="feat-desc">"Sem dados" = nunca inseriu. "+10 dias" = mais de 10 dias sem atualizar.</div></div>
+            </div>
+            <div class="dica amarelo"><strong>Atencao:</strong> Cadastre o e-mail do cliente ao criar — ele sera usado para convites de reuniao.</div>
+        </div>`
+    },
+    {
+        menu:'Inserir metricas',
+        balao:'Inserir metricas e o coracao do sistema. Voce registra os numeros de cada canal toda semana.',
+        html:`<div class="etapa-card">
+            <div class="etapa-numero">Metricas · etapa 3 de 8</div>
+            <div class="etapa-titulo">Inserindo metricas semanais</div>
+            <div class="etapa-desc">Dentro de cada cliente, clique em <strong>"+ Inserir metricas"</strong>. Escolha a data da semana e o canal. O formulario muda automaticamente para os campos certos de cada canal.</div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">&#128218;</span><div class="feat-titulo">Meta Ads</div><div class="feat-desc">CPM, CPC, CTR, ROAS, CPA, Frequencia e Conversoes.</div></div>
+                <div class="feat"><span class="feat-icon">&#128269;</span><div class="feat-titulo">Google Ads</div><div class="feat-desc">Impressoes, CTR, CPC, CPA, ROAS, Conversoes e Parcela.</div></div>
+                <div class="feat"><span class="feat-icon">&#127916;</span><div class="feat-titulo">Reels</div><div class="feat-desc">Views, Retencao %, Alcance, Curtidas, Comentarios, Salvamentos.</div></div>
+                <div class="feat"><span class="feat-icon">&#9999;&#65039;</span><div class="feat-titulo">Editar</div><div class="feat-desc">Cada linha do historico tem um icone de edicao para corrigir valores.</div></div>
+            </div>
+            <div class="dica verde"><strong>Dica:</strong> Use sempre a mesma data para a mesma semana. O Review agrupa por data.</div>
+        </div>`
+    },
+    {
+        menu:'Review semanal',
+        balao:'O Review e onde a magica acontece! Voce ve tudo da semana num painel visual com cores e comparativos.',
+        html:`<div class="etapa-card">
+            <div class="etapa-numero">Review · etapa 4 de 8</div>
+            <div class="etapa-titulo">Review semanal — seu painel de comando</div>
+            <div class="etapa-desc">Acesse pelo botao <strong>"Review Semanal"</strong> dentro do cliente. Escolha a semana no seletor e veja os cards de cada canal com metricas coloridas e comparativo com a semana anterior.</div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">&#128994;&#128993;&#128308;</span><div class="feat-titulo">Status geral</div><div class="feat-desc">Saudavel, Atencao ou Critico — calculado automaticamente.</div></div>
+                <div class="feat"><span class="feat-icon">&#9650;&#9660;</span><div class="feat-titulo">Deltas</div><div class="feat-desc">Setas verdes/vermelhas mostram se melhorou ou piorou vs semana passada.</div></div>
+                <div class="feat"><span class="feat-icon">&#128200;</span><div class="feat-titulo">Graficos</div><div class="feat-desc">Historico de ROAS, CTR e Retencao. Aparecem quando ha 2+ semanas.</div></div>
+                <div class="feat"><span class="feat-icon">&#9989;</span><div class="feat-titulo">Checklist</div><div class="feat-desc">15 tarefas por canal. Marque conforme vai analisando. Salvo localmente.</div></div>
+            </div>
+            <div class="dica"><strong>Anotacoes:</strong> O campo de notas fica salvo no navegador. Use para registrar contextos da semana.</div>
+        </div>`
+    },
+    {
+        menu:'Diagnostico com IA',
+        balao:'O sistema monta um prompt completo com as metricas. Voce copia e cola no ChatGPT!',
+        html:`<div class="etapa-card">
+            <div class="etapa-numero">IA · etapa 5 de 8</div>
+            <div class="etapa-titulo">Diagnostico com IA via ChatGPT</div>
+            <div class="etapa-desc">No Review e no Relatorio BI ha uma secao <strong>"Diagnostico com IA"</strong>. O sistema monta o prompt completo com todos os dados. Voce escolhe o tipo de analise e clica em copiar.</div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">&#128269;</span><div class="feat-titulo">Diagnostico</div><div class="feat-desc">Analisa canal por canal, identifica pontos criticos e oportunidades.</div></div>
+                <div class="feat"><span class="feat-icon">&#128203;</span><div class="feat-titulo">Para o gestor</div><div class="feat-desc">Gera lista de 5 a 8 acoes praticas para executar na semana.</div></div>
+                <div class="feat"><span class="feat-icon">&#128140;</span><div class="feat-titulo">Para o cliente</div><div class="feat-desc">Texto profissional de relatorio para enviar ao cliente.</div></div>
+                <div class="feat"><span class="feat-icon">&#128640;</span><div class="feat-titulo">Copiar e abrir</div><div class="feat-desc">Um clique copia o prompt e abre o ChatGPT. So colar e enviar.</div></div>
+            </div>
+            <div class="dica roxo"><strong>Dica:</strong> Quanto mais semanas inseridas, mais rico o contexto e melhor a analise da IA.</div>
+        </div>`
+    },
+    {
+        menu:'Relatorio BI',
+        balao:'O Relatorio BI e para analises mais profundas — por semana ou por mes inteiro, com graficos e PDF.',
+        html:`<div class="etapa-card">
+            <div class="etapa-numero">Relatorio · etapa 6 de 8</div>
+            <div class="etapa-titulo">Relatorio BI — analise completa</div>
+            <div class="etapa-desc">Acesse pelo botao <strong>"Relatorio BI"</strong>. Escolha entre semanal ou mensal. Veja KPIs resumidos, graficos interativos, insights automaticos e dados detalhados do periodo.</div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">&#128202;</span><div class="feat-titulo">4 KPIs principais</div><div class="feat-desc">Conversoes totais, melhor ROAS, media de retencao e canais ativos.</div></div>
+                <div class="feat"><span class="feat-icon">&#128200;</span><div class="feat-titulo">Graficos interativos</div><div class="feat-desc">Troque a metrica exibida em cada grafico com o seletor no topo.</div></div>
+                <div class="feat"><span class="feat-icon">&#10024;</span><div class="feat-titulo">Insights automaticos</div><div class="feat-desc">O sistema detecta alertas e oportunidades nos dados automaticamente.</div></div>
+                <div class="feat"><span class="feat-icon">&#128438;&#65039;</span><div class="feat-titulo">Exportar PDF</div><div class="feat-desc">Abre aba formatada para imprimir. No browser, escolha "Salvar como PDF".</div></div>
+            </div>
+            <div class="dica verde"><strong>Dica mensal:</strong> Selecione "Mensal" e escolha qualquer semana do mes — o sistema agrupa tudo automaticamente.</div>
+        </div>`
+    },
+    {
+        menu:'Calendario e ganchos',
+        balao:'O calendario organiza sua agenda. O banco de ganchos guarda os melhores textos de abertura de video!',
+        html:`<div class="etapa-card">
+            <div class="etapa-numero">Extras · etapa 7 de 8</div>
+            <div class="etapa-titulo">Calendario, ganchos e metas</div>
+            <div class="etapa-desc">Tres ferramentas extras que completam a gestao do cliente alem das metricas.</div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">&#128197;</span><div class="feat-titulo">Calendario</div><div class="feat-desc">Crie eventos de postagens, campanhas e reunioes. Integra com Google Calendar. Reunioes enviam convite por e-mail automaticamente.</div></div>
+                <div class="feat"><span class="feat-icon">&#128221;</span><div class="feat-titulo">Banco de ganchos</div><div class="feat-desc">Salve os textos de abertura (hooks) de Reels que funcionaram melhor. Filtre por categoria ou retencao. Copie com um clique.</div></div>
+                <div class="feat"><span class="feat-icon">&#127919;</span><div class="feat-titulo">Metas</div><div class="feat-desc">Defina metas de ROAS, CPA, CTR e Retencao por cliente. O semaforo mostra se esta no caminho certo.</div></div>
+                <div class="feat"><span class="feat-icon">&#128231;</span><div class="feat-titulo">Convite de reuniao</div><div class="feat-desc">Ao criar uma reuniao, preencha o e-mail do cliente. O sistema envia convite com link do Google Calendar.</div></div>
+            </div>
+            <div class="dica amarelo"><strong>Para o convite funcionar:</strong> configure EMAIL_USER e EMAIL_PASS nas variaveis de ambiente do Render.</div>
+        </div>`
+    },
+    {
+        menu:'Conta e acesso',
+        balao:'Pronto! Ultima etapa: como gerenciar sua conta e acessar de qualquer lugar.',
+        html:`<div class="etapa-card">
+            <div class="etapa-numero">Conta · etapa 8 de 8</div>
+            <div class="etapa-titulo">Sua conta e acesso ao sistema</div>
+            <div class="etapa-desc">O sistema usa autenticacao por <strong>e-mail e senha</strong>. No primeiro acesso voce cria a conta pelo /setup. Pode criar mais contas pelo /cadastro.</div>
+            <div class="features-grid">
+                <div class="feat"><span class="feat-icon">&#128272;</span><div class="feat-titulo">Senha segura</div><div class="feat-desc">Sua senha e armazenada com criptografia SHA-256. Nunca em texto simples.</div></div>
+                <div class="feat"><span class="feat-icon">&#128273;</span><div class="feat-titulo">Esqueci minha senha</div><div class="feat-desc">Na tela de login ha o link "Esqueci minha senha". Gera um link de redefini&ccedil;ao automaticamente.</div></div>
+                <div class="feat"><span class="feat-icon">&#128100;</span><div class="feat-titulo">Usuarios cadastrados</div><div class="feat-desc">Acesse /admin/usuarios para ver todos os usuarios, e-mails e datas de cadastro.</div></div>
+                <div class="feat"><span class="feat-icon">&#128682;</span><div class="feat-titulo">Logout</div><div class="feat-desc">Use o botao "Sair" no canto superior direito. A sessao e encerrada com seguranca.</div></div>
+            </div>
+            <div class="dica verde"><strong>Tudo pronto!</strong> Agora voce conhece o sistema completo. Clique em "Comecar agora"!</div>
+        </div>
+        <div class="etapa-card final-wrap">
+            <span class="final-icon">&#127881;</span>
+            <div class="final-titulo">Voce esta pronto para usar o Amigo Gestor!</div>
+            <div class="final-desc">Cadastre seu primeiro cliente, insira as metricas da semana e veja o sistema trabalhar por voce.</div>
+            <a href="/" class="btn-comecar">Comecar agora</a>
+        </div>`
+    }
+];
+
+var falas=[
+    'Bem-vindo! Eu sou o <strong>Guppy</strong>, seu assistente virtual. Vou te mostrar tudo que o Amigo Gestor faz por voce!',
+    'Cada cliente e uma pasta separada. O sistema avisa quando faz tempo que voce nao insere metricas!',
+    'Inserir metricas e simples! Escolha a data, o canal e preencha os campos. Voce pode editar depois se errar.',
+    'O Review e seu painel principal! As cores te dizem na hora se a performance esta boa ou precisa de atencao.',
+    'Aqui fica o superpoder do sistema! O prompt e montado com todos os dados e voce so cola no ChatGPT!',
+    'O Relatorio BI tem graficos interativos, insights automaticos e exportacao para PDF.',
+    'Calendario para organizar a agenda, ganchos para guardar os melhores hooks e metas para acompanhar resultados!',
+    'Pronto! Agora voce conhece tudo. Sua conta esta segura e voce pode acessar de qualquer dispositivo!'
+];
+
+function renderMenu(){
+    var menu=document.getElementById('etapas-menu');
+    menu.innerHTML='';
+    etapas.forEach(function(e,i){
+        var cl=i===etapaAtual?'ativo':(i<etapaAtual?'feito':'');
+        menu.innerHTML+=`<div class="menu-item ${cl}" onclick="irPara(${i})">
+            <div class="menu-dot"></div><span>${e.menu}</span>
+            <span class="check-badge">&#10003;</span>
+        </div>`;
+    });
+}
+
+function irPara(idx){
+    if(idx<0||idx>=etapas.length) return;
+    etapaAtual=idx;
+    document.getElementById('conteudo').innerHTML=etapas[idx].html;
+    document.getElementById('balao').innerHTML=falas[idx];
+    var pct=Math.round((idx/(etapas.length-1))*100);
+    document.getElementById('prog-bar').style.width=pct+'%';
+    document.getElementById('prog-label').textContent='etapa '+(idx+1)+' de '+etapas.length;
+    document.getElementById('btn-prev').disabled=idx===0;
+    var btnNext=document.getElementById('btn-next');
+    btnNext.textContent=idx===etapas.length-1?'Concluir':'Proximo';
+    btnNext.onclick=idx===etapas.length-1
+        ?function(){window.location.href='/';}
+        :function(){irPara(etapaAtual+1);};
+    renderMenu();
+    if(window.innerWidth<=800){
+        document.getElementById('conteudo').scrollIntoView({behavior:'smooth',block:'start'});
+    }
+}
+
+irPara(0);
+</script>
+</body>
+</html>

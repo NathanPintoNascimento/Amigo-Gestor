@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>{{ cliente[1] }}</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+        body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;min-height:100vh;padding-bottom:24px;}
+
+        /* ── TOP BAR ── */
+        .topbar{position:sticky;top:0;z-index:50;background:#0a0f1e;border-bottom:1px solid #1e293b;padding:12px 16px;display:flex;align-items:center;gap:12px;}
+        .btn-back{padding:7px 12px;background:#0f172a;border:1px solid #1e293b;border-radius:8px;color:#64748b;text-decoration:none;font-size:13px;}
+        .topbar-title{font-size:15px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .topbar-seg{font-size:11px;color:#475569;}
+
+        /* ── HEADER ── */
+        .header{background:linear-gradient(135deg,#111827,#0d1f3c);border-bottom:1px solid #1e3a5f;padding:16px;}
+        .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+        .header h1{font-size:20px;font-weight:700;margin-bottom:4px;}
+        .seg-badge{background:#1e3a5f;color:#93c5fd;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;}
+
+        /* ── METAS SEMÁFORO ── */
+        .metas-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:4px;}
+        .meta-chip{display:flex;align-items:center;gap:6px;background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:8px 12px;white-space:nowrap;flex-shrink:0;}
+        .meta-chip-label{font-size:10px;color:#475569;}
+        .meta-chip-val{font-size:13px;font-weight:700;}
+
+        /* ── BOTÕES DE AÇÃO ── */
+        .acoes{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px;border-bottom:1px solid #1e293b;}
+        .acoes-3{grid-template-columns:1fr 1fr 1fr;}
+        .btn-acao{padding:10px 8px;border-radius:10px;text-decoration:none;font-size:12px;font-weight:600;border:1px solid transparent;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s;}
+        .btn-acao span{font-size:18px;}
+        .btn-inserir{background:#0d1f3c;color:#93c5fd;border-color:#1e3a5f;}
+        .btn-review{background:#052e16;color:#6ee7b7;border-color:#065f46;}
+        .btn-relatorio{background:#1a0a2e;color:#c4b5fd;border-color:#4c1d95;}
+        .btn-ganchos{background:#1a1a0a;color:#fbbf24;border-color:#78350f;}
+        .btn-calendario{background:#0d1f3c;color:#7dd3fc;border-color:#0c4a6e;}
+        .btn-metas{background:#052e16;color:#4ade80;border-color:#14532d;}
+
+        /* ── SEÇÕES ── */
+        .section{padding:16px;}
+        .section-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #1e293b;}
+        .section-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+        .dot-meta{background:#3b82f6;}
+        .dot-google{background:#f59e0b;}
+        .dot-reels{background:#ec4899;}
+        .section-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#475569;}
+        .section-count{background:#1e293b;color:#475569;border-radius:20px;padding:1px 8px;font-size:10px;font-weight:700;margin-left:auto;}
+
+        /* ── TABELA ── */
+        .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;border:1px solid #111827;}
+        table{width:100%;border-collapse:collapse;font-size:12px;min-width:480px;}
+        thead tr{background:#060c18;}
+        thead th{text-align:left;padding:9px 11px;color:#334155;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;border-bottom:1px solid #111827;}
+        tbody tr{background:#0a0f1e;}
+        tbody tr:nth-child(even){background:#080d1a;}
+        tbody tr:active{background:#111827;}
+        td{padding:9px 11px;color:#94a3b8;white-space:nowrap;border-bottom:1px solid #0d1220;}
+        tbody tr:last-child td{border-bottom:none;}
+        .date-chip{background:#111827;color:#475569;border-radius:5px;padding:2px 7px;font-size:10px;font-family:monospace;}
+        .v-bom{color:#22c55e;font-weight:600;}
+        .v-ok{color:#fbbf24;font-weight:600;}
+        .v-ruim{color:#f87171;font-weight:600;}
+        .btn-ed{padding:4px 8px;background:#111827;color:#475569;border-radius:5px;text-decoration:none;font-size:11px;border:1px solid #1e293b;}
+        .empty-section{color:#334155;font-size:13px;text-align:center;padding:20px 0;}
+
+        /* ── LOADER ── */
+        #loader{position:fixed;inset:0;z-index:9999;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s;}
+
+        @media(min-width:641px){
+            .acoes{grid-template-columns:repeat(3,1fr);}
+            .acoes-3{grid-template-columns:repeat(6,1fr);}
+            .content-wrap{max-width:760px;margin:0 auto;}
+        }
+    </style>
+</head>
+<body>
+<div id="loader">
+    <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">📊</span><span style="font-size:20px;font-weight:700;">Amigo Gestor</span></div>
+    <div style="width:160px;height:3px;background:#1e293b;border-radius:99px;overflow:hidden;"><div id="lbar" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:99px;transition:width .5s;"></div></div>
+    <span style="font-size:12px;color:#475569;" id="ltxt">Carregando...</span>
+</div>
+
+<div class="content-wrap">
+<div class="topbar">
+    <a class="btn-back" href="/">← Voltar</a>
+    <div>
+        <div class="topbar-title">{{ cliente[1] }}</div>
+        <div class="topbar-seg">{{ cliente[2] }}</div>
+    </div>
+</div>
+
+{% if metas %}
+<div style="padding:12px 16px;border-bottom:1px solid #1e293b;">
+    <div class="metas-row">
+        {% if metas[2] and meta %}
+        {% set roas_atual = meta[0][6]|float %}
+        {% set roas_meta = metas[2]|float %}
+        <div class="meta-chip">
+            <span>{% if roas_atual >= roas_meta %}🟢{% elif roas_atual >= roas_meta*0.8 %}🟡{% else %}🔴{% endif %}</span>
+            <div><div class="meta-chip-label">ROAS meta: {{ metas[2] }}</div><div class="meta-chip-val">Atual: {{ meta[0][6] }}</div></div>
+        </div>
+        {% endif %}
+        {% if metas[5] and reels %}
+        {% set ret_atual = reels[0][5]|float %}
+        {% set ret_meta = metas[5]|float %}
+        <div class="meta-chip">
+            <span>{% if ret_atual >= ret_meta %}🟢{% elif ret_atual >= ret_meta*0.8 %}🟡{% else %}🔴{% endif %}</span>
+            <div><div class="meta-chip-label">Retenção meta: {{ metas[5] }}%</div><div class="meta-chip-val">Atual: {{ reels[0][5] }}%</div></div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Botões de ação -->
+<div class="acoes">
+    <a class="btn-acao btn-inserir" href="/inserir/{{ cliente[0] }}"><span>📥</span>Inserir</a>
+    <a class="btn-acao btn-review" href="/review/{{ cliente[0] }}"><span>📋</span>Review</a>
+    <a class="btn-acao btn-relatorio" href="/relatorio/{{ cliente[0] }}"><span>📊</span>BI</a>
+    <a class="btn-acao btn-ganchos" href="/ganchos/{{ cliente[0] }}"><span>⚓</span>Ganchos</a>
+    <a class="btn-acao btn-calendario" href="/calendario/{{ cliente[0] }}"><span>📅</span>Calendário</a>
+    <a class="btn-acao btn-metas" href="/metas/{{ cliente[0] }}"><span>🎯</span>Metas</a>
+</div>
+
+<!-- Meta Ads -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-dot dot-meta"></div>
+        <span class="section-title">Meta Ads</span>
+        {% if meta %}<span class="section-count">{{ meta|length }}</span>{% endif %}
+    </div>
+    {% if meta %}
+    <div class="table-scroll">
+        <table>
+            <thead><tr><th>Data</th><th>CPM</th><th>CPC</th><th>CTR%</th><th>ROAS</th><th>CPA</th><th>Freq</th><th>Conv</th><th></th></tr></thead>
+            <tbody>
+            {% for m in meta %}
+            <tr>
+                <td><span class="date-chip">{{ m[2] }}</span></td>
+                <td>R${{ m[3] }}</td><td>R${{ m[4] }}</td>
+                <td class="{% if m[5]|float>=2 %}v-bom{% elif m[5]|float>=1 %}v-ok{% else %}v-ruim{% endif %}">{{ m[5] }}%</td>
+                <td class="{% if m[6]|float>=3 %}v-bom{% elif m[6]|float>=1.5 %}v-ok{% else %}v-ruim{% endif %}">{{ m[6] }}</td>
+                <td>R${{ m[7] }}</td>
+                <td class="{% if m[8]|float>3.5 %}v-ruim{% elif m[8]|float>2.5 %}v-ok{% else %}v-bom{% endif %}">{{ m[8] }}</td>
+                <td class="v-bom">{{ m[9] }}</td>
+                <td><a class="btn-ed" href="/editar/meta/{{ m[0] }}">✏️</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}<p class="empty-section">Sem dados de Meta Ads ainda.</p>{% endif %}
+</div>
+
+<!-- Google Ads -->
+<div class="section" style="border-top:1px solid #1e293b;">
+    <div class="section-header">
+        <div class="section-dot dot-google"></div>
+        <span class="section-title">Google Ads</span>
+        {% if google %}<span class="section-count">{{ google|length }}</span>{% endif %}
+    </div>
+    {% if google %}
+    <div class="table-scroll">
+        <table>
+            <thead><tr><th>Data</th><th>Imp.</th><th>CTR%</th><th>CPC</th><th>CPA</th><th>ROAS</th><th>Conv</th><th>Parc%</th><th></th></tr></thead>
+            <tbody>
+            {% for g in google %}
+            <tr>
+                <td><span class="date-chip">{{ g[2] }}</span></td>
+                <td>{{ g[3] }}</td>
+                <td class="{% if g[4]|float>=5 %}v-bom{% elif g[4]|float>=3 %}v-ok{% else %}v-ruim{% endif %}">{{ g[4] }}%</td>
+                <td>R${{ g[5] }}</td><td>R${{ g[6] }}</td>
+                <td class="{% if g[7]|float>=4 %}v-bom{% elif g[7]|float>=2 %}v-ok{% else %}v-ruim{% endif %}">{{ g[7] }}</td>
+                <td class="v-bom">{{ g[8] }}</td>
+                <td class="{% if g[9]|float>=70 %}v-bom{% elif g[9]|float>=50 %}v-ok{% else %}v-ruim{% endif %}">{{ g[9] }}%</td>
+                <td><a class="btn-ed" href="/editar/google/{{ g[0] }}">✏️</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}<p class="empty-section">Sem dados de Google Ads ainda.</p>{% endif %}
+</div>
+
+<!-- Reels -->
+<div class="section" style="border-top:1px solid #1e293b;">
+    <div class="section-header">
+        <div class="section-dot dot-reels"></div>
+        <span class="section-title">Instagram Reels</span>
+        {% if reels %}<span class="section-count">{{ reels|length }}</span>{% endif %}
+    </div>
+    {% if reels %}
+    <div class="table-scroll">
+        <table>
+            <thead><tr><th>Data</th><th>Vídeo</th><th>Views</th><th>Ret%</th><th>Alcance</th><th>Curtidas</th><th>Comp.</th><th>Salv.</th><th></th></tr></thead>
+            <tbody>
+            {% for r in reels %}
+            <tr>
+                <td><span class="date-chip">{{ r[2] }}</span></td>
+                <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;color:#64748b;">{{ r[3] or '—' }}</td>
+                <td class="v-bom">{{ r[4] }}</td>
+                <td class="{% if r[5]|float>=40 %}v-bom{% elif r[5]|float>=25 %}v-ok{% else %}v-ruim{% endif %}">{{ r[5] }}%</td>
+                <td>{{ r[6] }}</td><td>{{ r[7] }}</td><td>{{ r[9] }}</td><td>{{ r[10] }}</td>
+                <td><a class="btn-ed" href="/editar/reels/{{ r[0] }}">✏️</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}<p class="empty-section">Sem dados de Reels ainda.</p>{% endif %}
+</div>
+</div>
+
+<script>
+(function(){
+    var b=document.getElementById('lbar'),t=document.getElementById('ltxt'),l=document.getElementById('loader'),p=0;
+    var iv=setInterval(function(){p=Math.min(p+Math.random()*20+5,88);b.style.width=p+'%';},200);
+    window.addEventListener('load',function(){clearInterval(iv);b.style.width='100%';t.textContent='Pronto!';setTimeout(function(){l.style.opacity='0';setTimeout(function(){l.style.display='none';},400);},200);});
+    document.querySelectorAll('a[href]').forEach(function(a){
+        var h=a.getAttribute('href');
+        if(h&&!h.startsWith('#')&&!h.startsWith('javascript')){
+            a.addEventListener('click',function(){l.style.display='flex';l.style.opacity='1';b.style.width='0%';p=0;setInterval(function(){p=Math.min(p+20+Math.random()*8,85);b.style.width=p+'%';},150);});
+        }
+    });
+})();
+</script>
+</body>
+</html>

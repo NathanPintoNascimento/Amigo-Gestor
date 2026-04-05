@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório BI — {{ cliente[1] }}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;padding:24px;min-height:100vh;}
+        @media print{body{background:white;color:#1e293b;padding:0;}#no-print{display:none!important;}.print-card{background:white!important;border-color:#e2e8f0!important;color:#1e293b!important;}}
+        .nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
+        .voltar{color:#475569;text-decoration:none;font-size:14px;}
+        .voltar:hover{color:#94a3b8;}
+        .brand{font-size:13px;color:#334155;font-weight:700;letter-spacing:.06em;}
+        .header{background:linear-gradient(135deg,#111827,#0d1f3c);border:1px solid #1e3a5f;border-radius:16px;padding:22px 28px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;}
+        .header h1{font-size:24px;font-weight:700;background:linear-gradient(90deg,#e2e8f0,#93c5fd);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:6px;}
+        .seg-badge{background:#1e3a5f;color:#93c5fd;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;}
+        .header-btns{display:flex;gap:8px;flex-wrap:wrap;}
+        .btn{padding:9px 16px;border-radius:9px;text-decoration:none;font-size:13px;font-weight:600;border:1px solid transparent;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
+        .btn-blue{background:#1e3a5f;color:#93c5fd;border-color:#2d5a9e;}
+        .btn-blue:hover{background:#1e40af;color:white;}
+        .btn-purple{background:#2e1065;color:#c4b5fd;border-color:#4c1d95;}
+        .btn-purple:hover{background:#4c1d95;color:white;}
+        .btn-green{background:#064e3b;color:#6ee7b7;border-color:#065f46;}
+        .btn-green:hover{background:#047857;color:white;}
+
+        .periodo-bar{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+        .periodo-btn{padding:7px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #1e293b;background:transparent;color:#475569;transition:all .15s;}
+        .periodo-btn.ativo{background:#1e3a5f;color:#93c5fd;border-color:#2d5a9e;}
+        .periodo-bar select{background:#0a0f1e;color:#e2e8f0;border:1px solid #1e293b;border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer;}
+        .periodo-bar label{color:#64748b;font-size:13px;}
+
+        /* KPIs */
+        .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+        @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:500px){.kpi-grid{grid-template-columns:1fr;}}
+        .kpi{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px 18px;cursor:default;transition:border-color .2s;}
+        .kpi:hover{border-color:#334155;}
+        .kpi-label{font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+        .kpi-val{font-size:26px;font-weight:700;color:#e2e8f0;}
+        .kpi-val.bom{color:#22c55e;} .kpi-val.ok{color:#fbbf24;} .kpi-val.ruim{color:#f87171;}
+        .kpi-sub{font-size:11px;color:#334155;margin-top:2px;}
+        .kpi-trend{font-size:12px;margin-top:6px;}
+        .trend-up{color:#22c55e;} .trend-down{color:#f87171;} .trend-neu{color:#475569;}
+
+        /* Insights automáticos */
+        .insights-box{background:#0f172a;border:1px solid #1e293b;border-left:3px solid #6366f1;border-radius:14px;padding:16px 20px;margin-bottom:20px;}
+        .insights-titulo{font-size:12px;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+        .insight-item{display:flex;align-items:flex-start;gap:10px;padding:7px 0;font-size:13px;color:#cbd5e1;line-height:1.5;border-bottom:1px solid #111827;}
+        .insight-item:last-child{border-bottom:none;}
+        .insight-ico{flex-shrink:0;font-size:14px;margin-top:1px;}
+
+        .card{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:20px 24px;margin-bottom:20px;}
+        .card-title{font-size:14px;font-weight:700;color:#e2e8f0;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+        .canal-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:2px 8px;border-radius:20px;}
+        .canal-tag.meta{background:#1d3a6e;color:#3b82f6;}
+        .canal-tag.google{background:#3a2800;color:#f59e0b;}
+        .canal-tag.reels{background:#3b0a2a;color:#ec4899;}
+
+        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+        @media(max-width:700px){.grid-2{grid-template-columns:1fr;}}
+        .chart-wrap{position:relative;height:200px;}
+        .chart-label{font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+
+        /* Seletor de métrica nos gráficos */
+        .chart-select{background:#0a0f1e;color:#475569;border:1px solid #1e293b;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;}
+
+        /* Tendência */
+        .trend-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #111827;font-size:13px;}
+        .trend-row:last-child{border-bottom:none;}
+        .trend-metrica{color:#64748b;}
+        .trend-val{font-weight:700;}
+        .trend-dir{font-size:16px;margin-left:6px;}
+        .v-bom{color:#22c55e;font-weight:600;} .v-ok{color:#fbbf24;font-weight:600;} .v-ruim{color:#f87171;font-weight:600;} .v-std{color:#cbd5e1;}
+
+        /* Tabs */
+        .ia-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+        .ia-tab{padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #1e293b;background:transparent;color:#475569;transition:all .15s;}
+        .ia-tab.ativo{background:#2e1065;color:#c4b5fd;border-color:#4c1d95;}
+        .ia-pane{display:none;}
+        .ia-pane.ativo{display:block;}
+
+        /* Tabelas */
+        .table-wrap{border-radius:10px;border:1px solid #111827;overflow:hidden;overflow-x:auto;margin-top:12px;}
+        table{width:100%;border-collapse:collapse;font-size:12px;min-width:500px;}
+        thead tr{background:#060c18;}
+        thead th{text-align:left;padding:9px 12px;color:#334155;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;border-bottom:1px solid #111827;}
+        tbody tr{background:#0a0f1e;transition:background .1s;}
+        tbody tr:nth-child(even){background:#080d1a;}
+        tbody tr:hover{background:#111827;}
+        td{padding:9px 12px;color:#94a3b8;white-space:nowrap;border-bottom:1px solid #0d1220;}
+        tbody tr:last-child td{border-bottom:none;}
+        .date-chip{background:#111827;color:#475569;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;font-family:monospace;}
+        .sem-dados-card{color:#334155;font-size:13px;text-align:center;padding:30px;}
+
+        /* Comparativo */
+        .comp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px;}
+        @media(max-width:600px){.comp-grid{grid-template-columns:1fr;}}
+        .comp-item{background:#0a0f1e;border-radius:10px;padding:12px 14px;border:1px solid #1e293b;}
+        .comp-canal{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+        .comp-canal.meta{color:#3b82f6;} .comp-canal.google{color:#f59e0b;} .comp-canal.reels{color:#ec4899;}
+        .comp-metrica{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid #111827;}
+        .comp-metrica:last-child{border-bottom:none;}
+        .comp-label{color:#475569;} .comp-val{font-weight:700;}
+
+        #loader{position:fixed;inset:0;z-index:9999;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s ease;}
+
+        @media print{
+            #loader,#no-print{display:none!important;}
+            body{background:white;color:#0f172a;padding:16px;}
+            .header{background:#f8fafc;border:1px solid #e2e8f0;}
+            .card,.kpi{background:#f8fafc;border:1px solid #e2e8f0;}
+            .periodo-bar{display:none;}
+            .insights-box{background:#f8fafc;border:1px solid #e2e8f0;}
+        }
+
+        /* MOBILE */
+        @media(max-width:640px){
+            body{overflow-x:hidden;padding:16px 14px!important;}
+            .header{padding:16px 18px!important;flex-direction:column;align-items:flex-start!important;}
+            .header h1{font-size:20px!important;}
+            .header-btns{width:100%;}
+            .header-btns .btn{flex:1;justify-content:center;font-size:12px!important;padding:8px 10px!important;}
+            .grid-2,.kpi-grid{grid-template-columns:1fr!important;}
+            .table-wrap,table{overflow-x:auto;display:block;-webkit-overflow-scrolling:touch;}
+            table{min-width:480px;}
+            .card{padding:16px!important;}
+            .periodo-bar{flex-wrap:wrap;gap:8px;}
+            .chart-wrap{height:160px!important;}
+            .ia-tab{font-size:11px!important;padding:5px 10px!important;}
+            *{max-width:100%;}
+            pre{white-space:pre-wrap;word-break:break-word;}
+        }
+        @media(max-width:400px){
+            body{padding:12px 10px!important;}
+            .kpi-val{font-size:20px!important;}
+            thead th{font-size:9px!important;padding:7px 8px!important;}
+            td{font-size:11px!important;padding:7px 8px!important;}
+        }
+    </style>
+</head>
+<body>
+
+<div id="loader">
+    <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">📊</span><span style="font-size:20px;font-weight:700;color:white;">Amigo Gestor</span></div>
+    <div style="width:180px;height:3px;background:#1e293b;border-radius:99px;overflow:hidden;"><div id="loader-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:99px;transition:width .5s ease;"></div></div>
+    <span style="font-size:13px;color:#475569;" id="loader-txt">Carregando...</span>
+</div>
+
+<div id="no-print">
+<div class="nav">
+    <a class="voltar" href="/review/{{ cliente[0] }}">← Voltar ao Review</a>
+    <span class="brand">AMIGO GESTOR</span>
+</div>
+<div class="header">
+    <div>
+        <div style="font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Relatório BI</div>
+        <h1>{{ cliente[1] }}</h1>
+        <span class="seg-badge">{{ cliente[2] }}</span>
+    </div>
+    <div class="header-btns">
+        <button class="btn btn-purple" onclick="exportarPDF()">🖨️ Exportar PDF</button>
+        <a class="btn btn-blue" href="/inserir/{{ cliente[0] }}">+ Inserir métricas</a>
+    </div>
+</div>
+<div class="periodo-bar">
+    <button class="periodo-btn" id="btn-semanal" onclick="setPeriodo('semanal')">Semanal</button>
+    <button class="periodo-btn" id="btn-mensal" onclick="setPeriodo('mensal')">Mensal</button>
+    <label style="margin-left:8px;">Período:</label>
+    <select id="sel-periodo" onchange="trocarPeriodo(this.value)">
+        {% for s in semanas %}<option value="{{ s }}" {% if s==periodo_atual %}selected{% endif %}>{{ s }}</option>{% endfor %}
+        {% if not semanas %}<option>Sem dados ainda</option>{% endif %}
+    </select>
+    <span style="font-size:12px;color:#475569;margin-left:auto;">{{ periodo_atual or '—' }}</span>
+</div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid">
+    <div class="kpi">
+        <div class="kpi-label">Conversões totais</div>
+        <div class="kpi-val bom" id="kpi-conv">{{ kpis.conversoes_total }}</div>
+        <div class="kpi-sub">Meta + Google</div>
+        <div class="kpi-trend" id="kpi-conv-trend"></div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Melhor ROAS</div>
+        <div class="kpi-val {% if kpis.melhor_roas|float >= 3 %}bom{% elif kpis.melhor_roas|float >= 1.5 %}ok{% else %}ruim{% endif %}" id="kpi-roas">{{ kpis.melhor_roas }}</div>
+        <div class="kpi-sub">{{ kpis.melhor_roas_canal }}</div>
+        <div class="kpi-trend" id="kpi-roas-trend"></div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Média retenção Reels</div>
+        <div class="kpi-val {% if kpis.media_retencao|float >= 40 %}bom{% elif kpis.media_retencao|float >= 25 %}ok{% else %}ruim{% endif %}" id="kpi-ret">{{ kpis.media_retencao }}%</div>
+        <div class="kpi-sub">{{ kpis.total_reels }} reels no período</div>
+        <div class="kpi-trend" id="kpi-ret-trend"></div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-label">Canais ativos</div>
+        <div class="kpi-val" id="kpi-canais">{{ kpis.canais_ativos }}/3</div>
+        <div class="kpi-sub">Meta · Google · Reels</div>
+    </div>
+</div>
+
+<!-- Insights automáticos -->
+<div class="insights-box" id="insights-box">
+    <div class="insights-titulo">
+        <span style="font-size:16px;">✨</span> Insights automáticos
+        <span style="font-size:11px;color:#475569;font-weight:400;margin-left:auto;">gerado com os dados do período</span>
+    </div>
+    <div id="insights-lista"><div style="color:#334155;font-size:13px;padding:8px 0;">Calculando insights...</div></div>
+</div>
+
+<!-- Gráficos interativos -->
+<div class="grid-2">
+    <div class="card">
+        <div class="chart-label">
+            <span>📘 Meta Ads</span>
+            <select class="chart-select" id="sel-meta-metrica" onchange="atualizarGraficoMeta()">
+                <option value="roas_ctr">ROAS + CTR%</option>
+                <option value="cpm_cpc">CPM + CPC</option>
+                <option value="conv_freq">Conversões + Freq.</option>
+            </select>
+        </div>
+        <div class="chart-wrap"><canvas id="chartMetaBI"></canvas></div>
+    </div>
+    <div class="card">
+        <div class="chart-label">
+            <span>🔍 Google Ads</span>
+            <select class="chart-select" id="sel-google-metrica" onchange="atualizarGraficoGoogle()">
+                <option value="roas_parcela">ROAS + Parcela%</option>
+                <option value="ctr_cpc">CTR% + CPC</option>
+                <option value="conv">Conversões</option>
+            </select>
+        </div>
+        <div class="chart-wrap"><canvas id="chartGoogleBI"></canvas></div>
+    </div>
+</div>
+<div class="grid-2">
+    <div class="card">
+        <div class="chart-label">
+            <span>🎬 Reels</span>
+            <select class="chart-select" id="sel-reels-metrica" onchange="atualizarGraficoReels()">
+                <option value="retencao">Retenção%</option>
+                <option value="views">Views</option>
+                <option value="salvamentos">Salvamentos</option>
+            </select>
+        </div>
+        <div class="chart-wrap"><canvas id="chartReelsBI"></canvas></div>
+    </div>
+    <div class="card">
+        <div class="chart-label"><span>📊 Conversões combinadas</span></div>
+        <div class="chart-wrap"><canvas id="chartConvBI"></canvas></div>
+    </div>
+</div>
+
+<!-- Comparativo por canal -->
+<div class="card">
+    <div class="card-title">📊 Resumo comparativo do período</div>
+    <div class="comp-grid" id="comp-grid">
+        <div style="color:#334155;font-size:13px;grid-column:1/-1;text-align:center;padding:16px;">Calculando...</div>
+    </div>
+</div>
+
+<!-- Tendências -->
+<div class="grid-2">
+    <div class="card">
+        <div class="card-title">📈 Tendências Meta Ads <span class="canal-tag meta">Meta</span></div>
+        {% if meta_periodo %}
+        {% set m0=meta_periodo[-1] %}{% set m1=meta_periodo[-2] if meta_periodo|length>1 else None %}
+        <div class="trend-row"><span class="trend-metrica">ROAS</span><span class="trend-val {% if m0[6]|float>=3 %}v-bom{% elif m0[6]|float>=1.5 %}v-ok{% else %}v-ruim{% endif %}">{{ m0[6] }}{% if m1 %}<span class="trend-dir">{% if m0[6]|float>=m1[6]|float %}📈{% else %}📉{% endif %}</span>{% endif %}</span></div>
+        <div class="trend-row"><span class="trend-metrica">CTR%</span><span class="trend-val {% if m0[5]|float>=2 %}v-bom{% elif m0[5]|float>=1 %}v-ok{% else %}v-ruim{% endif %}">{{ m0[5] }}%{% if m1 %}<span class="trend-dir">{% if m0[5]|float>=m1[5]|float %}📈{% else %}📉{% endif %}</span>{% endif %}</span></div>
+        <div class="trend-row"><span class="trend-metrica">Frequência</span><span class="trend-val {% if m0[8]|float>3.5 %}v-ruim{% elif m0[8]|float>2.5 %}v-ok{% else %}v-bom{% endif %}">{{ m0[8] }}{% if m1 %}<span class="trend-dir">{% if m0[8]|float<=m1[8]|float %}📈{% else %}📉{% endif %}</span>{% endif %}</span></div>
+        <div class="trend-row"><span class="trend-metrica">CPA</span><span class="trend-val v-std">R$ {{ m0[7] }}</span></div>
+        {% else %}<p style="color:#334155;font-size:13px;padding:12px 0;">Sem dados no período.</p>{% endif %}
+    </div>
+    <div class="card">
+        <div class="card-title">📈 Tendências Google Ads <span class="canal-tag google">Google</span></div>
+        {% if google_periodo %}
+        {% set g0=google_periodo[-1] %}{% set g1=google_periodo[-2] if google_periodo|length>1 else None %}
+        <div class="trend-row"><span class="trend-metrica">ROAS</span><span class="trend-val {% if g0[7]|float>=4 %}v-bom{% elif g0[7]|float>=2 %}v-ok{% else %}v-ruim{% endif %}">{{ g0[7] }}{% if g1 %}<span class="trend-dir">{% if g0[7]|float>=g1[7]|float %}📈{% else %}📉{% endif %}</span>{% endif %}</span></div>
+        <div class="trend-row"><span class="trend-metrica">CTR%</span><span class="trend-val {% if g0[4]|float>=5 %}v-bom{% elif g0[4]|float>=3 %}v-ok{% else %}v-ruim{% endif %}">{{ g0[4] }}%</span></div>
+        <div class="trend-row"><span class="trend-metrica">Parcela Imp.</span><span class="trend-val {% if g0[9]|float>=70 %}v-bom{% elif g0[9]|float>=50 %}v-ok{% else %}v-ruim{% endif %}">{{ g0[9] }}%</span></div>
+        <div class="trend-row"><span class="trend-metrica">CPA</span><span class="trend-val v-std">R$ {{ g0[6] }}</span></div>
+        {% else %}<p style="color:#334155;font-size:13px;padding:12px 0;">Sem dados no período.</p>{% endif %}
+    </div>
+</div>
+
+<!-- IA prompts -->
+<div class="card">
+    <div class="card-title">🤖 Análise com IA <span style="background:#1e1b4b;color:#a5b4fc;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;margin-left:4px;">via ChatGPT</span></div>
+    <div class="ia-tabs">
+        <button class="ia-tab ativo" onclick="trocarPromptTab(event,'diagnostico')">🔍 Diagnóstico</button>
+        <button class="ia-tab" onclick="trocarPromptTab(event,'gestor')">📋 Para o gestor</button>
+        <button class="ia-tab" onclick="trocarPromptTab(event,'cliente')">💌 Para o cliente</button>
+    </div>
+    <p style="font-size:13px;color:#64748b;margin-bottom:14px;line-height:1.6;">Prompt montado com os dados do período. Copie e cole no ChatGPT.</p>
+    <div style="background:#0a0f1e;border-radius:10px;padding:14px 16px;margin-bottom:14px;max-height:220px;overflow-y:auto;">
+        <div style="font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;" id="prompt-tab-label">Diagnóstico por canal</div>
+        <pre id="bi-prompt-preview" style="font-size:12px;color:#64748b;white-space:pre-wrap;line-height:1.6;font-family:inherit;">Gerando prompt...</pre>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-purple" onclick="abrirChatGPTBI()" style="flex:1;">🚀 Copiar e Abrir ChatGPT</button>
+        <button class="btn btn-blue" onclick="copiarPromptBI()" style="padding:9px 14px;">📋 Só copiar</button>
+    </div>
+    <div id="copiado-bi-msg" style="font-size:12px;color:#22c55e;margin-top:8px;display:none;">✓ Copiado! Cole no ChatGPT.</div>
+</div>
+
+<!-- Dados do período -->
+<div class="card">
+    <div class="card-title">📋 Dados do período</div>
+    <div class="ia-tabs">
+        <button class="ia-tab ativo" id="tab-dmeta" onclick="abrirDadosTab(event,'dmeta')">📘 Meta</button>
+        <button class="ia-tab" onclick="abrirDadosTab(event,'dgoogle')">🔍 Google</button>
+        <button class="ia-tab" onclick="abrirDadosTab(event,'dreels')">🎬 Reels</button>
+    </div>
+    <div class="ia-pane ativo" id="dmeta">
+        {% if meta_periodo %}
+        <div class="table-wrap"><table><thead><tr><th>Data</th><th>CPM</th><th>CPC</th><th>CTR%</th><th>ROAS</th><th>CPA</th><th>Freq.</th><th>Conv.</th></tr></thead><tbody>
+        {% for m in meta_periodo %}<tr><td><span class="date-chip">{{ m[2] }}</span></td><td class="v-std">R$ {{ m[3] }}</td><td class="v-std">R$ {{ m[4] }}</td><td class="{% if m[5]|float>=2 %}v-bom{% elif m[5]|float>=1 %}v-ok{% else %}v-ruim{% endif %}">{{ m[5] }}%</td><td class="{% if m[6]|float>=3 %}v-bom{% elif m[6]|float>=1.5 %}v-ok{% else %}v-ruim{% endif %}">{{ m[6] }}</td><td class="v-std">R$ {{ m[7] }}</td><td class="{% if m[8]|float>3.5 %}v-ruim{% elif m[8]|float>2.5 %}v-ok{% else %}v-bom{% endif %}">{{ m[8] }}</td><td class="v-bom">{{ m[9] }}</td></tr>{% endfor %}
+        </tbody></table></div>
+        {% else %}<p class="sem-dados-card">Sem dados de Meta Ads neste período.</p>{% endif %}
+    </div>
+    <div class="ia-pane" id="dgoogle">
+        {% if google_periodo %}
+        <div class="table-wrap"><table><thead><tr><th>Data</th><th>Impressões</th><th>CTR%</th><th>CPC</th><th>CPA</th><th>ROAS</th><th>Conv.</th><th>Parcela%</th></tr></thead><tbody>
+        {% for g in google_periodo %}<tr><td><span class="date-chip">{{ g[2] }}</span></td><td class="v-std">{{ g[3] }}</td><td class="{% if g[4]|float>=5 %}v-bom{% elif g[4]|float>=3 %}v-ok{% else %}v-ruim{% endif %}">{{ g[4] }}%</td><td class="v-std">R$ {{ g[5] }}</td><td class="v-std">R$ {{ g[6] }}</td><td class="{% if g[7]|float>=4 %}v-bom{% elif g[7]|float>=2 %}v-ok{% else %}v-ruim{% endif %}">{{ g[7] }}</td><td class="v-bom">{{ g[8] }}</td><td class="{% if g[9]|float>=70 %}v-bom{% elif g[9]|float>=50 %}v-ok{% else %}v-ruim{% endif %}">{{ g[9] }}%</td></tr>{% endfor %}
+        </tbody></table></div>
+        {% else %}<p class="sem-dados-card">Sem dados de Google Ads neste período.</p>{% endif %}
+    </div>
+    <div class="ia-pane" id="dreels">
+        {% if reels_periodo %}
+        <div class="table-wrap"><table><thead><tr><th>Data</th><th>Vídeo</th><th>Views</th><th>Ret.%</th><th>Alcance</th><th>Curtidas</th><th>Compart.</th><th>Salvam.</th></tr></thead><tbody>
+        {% for r in reels_periodo %}<tr><td><span class="date-chip">{{ r[2] }}</span></td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;color:#64748b;">{{ r[3] or '—' }}</td><td class="v-bom">{{ r[4] }}</td><td class="{% if r[5]|float>=40 %}v-bom{% elif r[5]|float>=25 %}v-ok{% else %}v-ruim{% endif %}">{{ r[5] }}%</td><td class="v-std">{{ r[6] }}</td><td class="v-std">{{ r[7] }}</td><td class="v-std">{{ r[9] }}</td><td class="v-std">{{ r[10] }}</td></tr>{% endfor %}
+        </tbody></table></div>
+        {% else %}<p class="sem-dados-card">Sem dados de Reels neste período.</p>{% endif %}
+    </div>
+</div>
+
+<!-- Dados JS -->
+<script>
+const CLIENTE_ID={{ cliente[0] }};
+const CLIENTE_NOME="{{ cliente[1] }}";
+const CLIENTE_SEG="{{ cliente[2] }}";
+const PERIODO_ATUAL="{{ periodo_atual }}";
+const TIPO_PERIODO="{{ tipo_periodo }}";
+const SEMANAS={{ semanas|tojson }};
+const HIST_META={{ historico_meta|tojson }};
+const HIST_GOOGLE={{ historico_google|tojson }};
+const HIST_REELS={{ historico_reels|tojson }};
+const META_PERIODO={{ meta_periodo|tojson }};
+const GOOGLE_PERIODO={{ google_periodo|tojson }};
+const REELS_PERIODO={{ reels_periodo|tojson }};
+</script>
+<script>
+// Loader
+(function(){
+    var bar=document.getElementById('loader-bar'),txt=document.getElementById('loader-txt'),
+        loader=document.getElementById('loader'),p=0,i=0;
+    var msgs=['Carregando...','Preparando BI...','Quase lá...'];
+    var iv=setInterval(function(){p=Math.min(p+Math.random()*18+5,88);bar.style.width=p+'%';
+        if(i<msgs.length-1&&p>40+i*25){i++;txt.textContent=msgs[i];}},180);
+    window.addEventListener('load',function(){clearInterval(iv);bar.style.width='100%';txt.textContent='Pronto!';
+        setTimeout(function(){loader.style.opacity='0';setTimeout(function(){loader.style.display='none';},400);},200);});
+    document.querySelectorAll('a[href]').forEach(function(a){
+        var href=a.getAttribute('href');
+        if(href&&!href.startsWith('#')&&!href.startsWith('javascript')){
+            a.addEventListener('click',function(){
+                loader.style.display='flex';loader.style.opacity='1';bar.style.width='0%';p=0;i=0;txt.textContent='Carregando...';
+                var iv2=setInterval(function(){p=Math.min(p+Math.random()*20+8,85);bar.style.width=p+'%';},150);
+                setTimeout(function(){clearInterval(iv2);},10000);
+            });
+        }
+    });
+})();
+
+// Período
+function setPeriodo(tipo){
+    document.getElementById('btn-semanal').classList.toggle('ativo',tipo==='semanal');
+    document.getElementById('btn-mensal').classList.toggle('ativo',tipo==='mensal');
+    trocarPeriodo(document.getElementById('sel-periodo').value,tipo);
+}
+function trocarPeriodo(v,tipo){
+    window.location.href=`/relatorio/${CLIENTE_ID}?periodo=${encodeURIComponent(v)}&tipo=${tipo||TIPO_PERIODO}`;
+}
+
+// Tabs dados
+function abrirDadosTab(e,nome){
+    var card=e.target.closest('.card');
+    card.querySelectorAll('.ia-tab').forEach(t=>t.classList.remove('ativo'));
+    card.querySelectorAll('.ia-pane').forEach(p=>p.classList.remove('ativo'));
+    document.getElementById(nome).classList.add('ativo');
+    e.target.classList.add('ativo');
+}
+
+// ── CHARTS ─────────────────────────────────────────────────────────
+var CC={responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#475569',font:{size:11}}}},
+    scales:{x:{ticks:{color:'#334155',font:{size:10}},grid:{color:'#111827'}},
+            y:{ticks:{color:'#334155',font:{size:10}},grid:{color:'#111827'}}}};
+
+var chartMeta=null, chartGoogle=null, chartReels=null, chartConv=null;
+
+function criarOuAtualizar(instancia, elId, config){
+    if(instancia){ instancia.destroy(); }
+    var el=document.getElementById(elId);
+    if(!el) return null;
+    return new Chart(el, config);
+}
+
+function atualizarGraficoMeta(){
+    var modo=document.getElementById('sel-meta-metrica').value;
+    var datasets=[];
+    if(modo==='roas_ctr'){
+        datasets=[
+            {label:'ROAS',data:HIST_META.map(r=>parseFloat(r[6])||0),borderColor:'#3b82f6',backgroundColor:'#3b82f615',tension:.4,pointRadius:3},
+            {label:'CTR%',data:HIST_META.map(r=>parseFloat(r[5])||0),borderColor:'#06b6d4',backgroundColor:'#06b6d415',tension:.4,pointRadius:3}
+        ];
+    } else if(modo==='cpm_cpc'){
+        datasets=[
+            {label:'CPM R$',data:HIST_META.map(r=>parseFloat(r[3])||0),borderColor:'#f59e0b',backgroundColor:'#f59e0b15',tension:.4,pointRadius:3},
+            {label:'CPC R$',data:HIST_META.map(r=>parseFloat(r[4])||0),borderColor:'#fbbf24',backgroundColor:'#fbbf2415',tension:.4,pointRadius:3}
+        ];
+    } else {
+        datasets=[
+            {label:'Conversões',data:HIST_META.map(r=>parseInt(r[9])||0),borderColor:'#22c55e',backgroundColor:'#22c55e15',tension:.4,pointRadius:3,type:'bar'},
+            {label:'Frequência',data:HIST_META.map(r=>parseFloat(r[8])||0),borderColor:'#ec4899',backgroundColor:'transparent',tension:.4,pointRadius:3}
+        ];
+    }
+    chartMeta=criarOuAtualizar(chartMeta,'chartMetaBI',{type:'line',data:{labels:HIST_META.map(r=>r[2]),datasets},options:CC});
+}
+
+function atualizarGraficoGoogle(){
+    var modo=document.getElementById('sel-google-metrica').value;
+    var datasets=[];
+    if(modo==='roas_parcela'){
+        datasets=[
+            {label:'ROAS',data:HIST_GOOGLE.map(r=>parseFloat(r[7])||0),borderColor:'#f59e0b',backgroundColor:'#f59e0b15',tension:.4,pointRadius:3},
+            {label:'Parcela%',data:HIST_GOOGLE.map(r=>parseFloat(r[9])||0),borderColor:'#fbbf24',backgroundColor:'#fbbf2415',tension:.4,pointRadius:3}
+        ];
+    } else if(modo==='ctr_cpc'){
+        datasets=[
+            {label:'CTR%',data:HIST_GOOGLE.map(r=>parseFloat(r[4])||0),borderColor:'#3b82f6',backgroundColor:'#3b82f615',tension:.4,pointRadius:3},
+            {label:'CPC R$',data:HIST_GOOGLE.map(r=>parseFloat(r[5])||0),borderColor:'#06b6d4',backgroundColor:'#06b6d415',tension:.4,pointRadius:3}
+        ];
+    } else {
+        datasets=[
+            {label:'Conversões',data:HIST_GOOGLE.map(r=>parseInt(r[8])||0),backgroundColor:'#f59e0b50',borderColor:'#f59e0b',borderWidth:1.5,type:'bar'}
+        ];
+    }
+    chartGoogle=criarOuAtualizar(chartGoogle,'chartGoogleBI',{type:'line',data:{labels:HIST_GOOGLE.map(r=>r[2]),datasets},options:CC});
+}
+
+function atualizarGraficoReels(){
+    var modo=document.getElementById('sel-reels-metrica').value;
+    var idx={'retencao':5,'views':4,'salvamentos':10}[modo]||5;
+    var cor={'retencao':'#ec4899','views':'#a78bfa','salvamentos':'#22c55e'}[modo]||'#ec4899';
+    var lbl={'retencao':'Retenção%','views':'Views','salvamentos':'Salvamentos'}[modo]||'Retenção%';
+    chartReels=criarOuAtualizar(chartReels,'chartReelsBI',{type:'bar',
+        data:{labels:HIST_REELS.map(r=>r[2]),datasets:[{label:lbl,
+            data:HIST_REELS.map(r=>parseFloat(r[idx])||0),
+            backgroundColor:cor+'40',borderColor:cor,borderWidth:1.5}]},options:CC});
+}
+
+function initConvChart(){
+    var allDates=[...new Set([...HIST_META.map(r=>r[2]),...HIST_GOOGLE.map(r=>r[2])])].sort();
+    if(!allDates.length) return;
+    var mc=allDates.map(d=>{var r=HIST_META.find(m=>m[2]===d);return r?parseInt(r[9])||0:0;});
+    var gc=allDates.map(d=>{var r=HIST_GOOGLE.find(g=>g[2]===d);return r?parseInt(r[8])||0:0;});
+    chartConv=criarOuAtualizar(chartConv,'chartConvBI',{type:'bar',
+        data:{labels:allDates,datasets:[
+            {label:'Meta',data:mc,backgroundColor:'#3b82f650',borderColor:'#3b82f6',borderWidth:1.5},
+            {label:'Google',data:gc,backgroundColor:'#f59e0b50',borderColor:'#f59e0b',borderWidth:1.5}
+        ]},options:CC});
+}
+
+function initCharts(){
+    if(HIST_META.length>0) atualizarGraficoMeta();
+    if(HIST_GOOGLE.length>0) atualizarGraficoGoogle();
+    if(HIST_REELS.length>0) atualizarGraficoReels();
+    initConvChart();
+}
+
+// ── INSIGHTS AUTOMÁTICOS ────────────────────────────────────────────
+function gerarInsights(){
+    var insights=[];
+
+    // Meta
+    if(META_PERIODO.length>0){
+        var n=META_PERIODO.length;
+        var roas=META_PERIODO.reduce((a,r)=>a+parseFloat(r[6]||0),0)/n;
+        var freq=META_PERIODO.reduce((a,r)=>a+parseFloat(r[8]||0),0)/n;
+        var ctr=META_PERIODO.reduce((a,r)=>a+parseFloat(r[5]||0),0)/n;
+        if(freq>3.5) insights.push({ico:'🔴',txt:`Meta Ads: Frequência média de ${freq.toFixed(1)} está alta — público saturado. Considere expandir a segmentação ou criar novos criativos.`});
+        else if(freq>2.5) insights.push({ico:'🟡',txt:`Meta Ads: Frequência média de ${freq.toFixed(1)} está moderada — fique de olho na saturação.`});
+        if(roas<1.5) insights.push({ico:'🔴',txt:`Meta Ads: ROAS médio de ${roas.toFixed(2)} está abaixo do ponto de equilíbrio. Revisar estrutura de campanhas e landing pages.`});
+        else if(roas>=3) insights.push({ico:'🟢',txt:`Meta Ads: ROAS médio de ${roas.toFixed(2)} está excelente. Avalie escalar o orçamento das campanhas que estão convertendo.`});
+        if(ctr<1) insights.push({ico:'🟡',txt:`Meta Ads: CTR de ${ctr.toFixed(2)}% está baixo — os criativos podem não estar chamando atenção. Teste novos formatos e copys.`});
+    }
+
+    // Google
+    if(GOOGLE_PERIODO.length>0){
+        var n=GOOGLE_PERIODO.length;
+        var roas=GOOGLE_PERIODO.reduce((a,r)=>a+parseFloat(r[7]||0),0)/n;
+        var parcela=GOOGLE_PERIODO.reduce((a,r)=>a+parseFloat(r[9]||0),0)/n;
+        var ctr=GOOGLE_PERIODO.reduce((a,r)=>a+parseFloat(r[4]||0),0)/n;
+        if(parcela<50) insights.push({ico:'🔴',txt:`Google Ads: Parcela de impressão média de ${parcela.toFixed(0)}% — você está perdendo muitos leilões. Considere aumentar o lance ou o orçamento diário.`});
+        else if(parcela>=80) insights.push({ico:'🟢',txt:`Google Ads: Parcela de impressão de ${parcela.toFixed(0)}% é ótima — boa presença nos leilões.`});
+        if(roas<2) insights.push({ico:'🔴',txt:`Google Ads: ROAS de ${roas.toFixed(2)} está fraco. Revisar palavras-chave, negativações e estratégia de lances.`});
+        if(ctr<3) insights.push({ico:'🟡',txt:`Google Ads: CTR de ${ctr.toFixed(2)}% está baixo para pesquisa. Melhorar título, extensões e relevância dos anúncios.`});
+    }
+
+    // Reels
+    if(REELS_PERIODO.length>0){
+        var validos=REELS_PERIODO.filter(r=>parseFloat(r[5])<=100);
+        if(validos.length>0){
+            var ret=validos.reduce((a,r)=>a+parseFloat(r[5]||0),0)/validos.length;
+            if(ret<25) insights.push({ico:'🔴',txt:`Reels: Retenção média de ${ret.toFixed(1)}% está crítica — o gancho dos primeiros 3 segundos não está funcionando. Testar abertura com mais impacto.`});
+            else if(ret>=40) insights.push({ico:'🟢',txt:`Reels: Retenção média de ${ret.toFixed(1)}% está excelente. Os conteúdos com melhor retenção podem ser usados como base para novos criativos de tráfego pago.`});
+            else insights.push({ico:'🟡',txt:`Reels: Retenção média de ${ret.toFixed(1)}% — há espaço para melhorar. Analisar os primeiros 5 segundos dos vídeos com menor retenção.`});
+        }
+    }
+
+    // Cross-canal
+    if(META_PERIODO.length>0 && GOOGLE_PERIODO.length>0){
+        var rMeta=META_PERIODO.reduce((a,r)=>a+parseFloat(r[6]||0),0)/META_PERIODO.length;
+        var rGoog=GOOGLE_PERIODO.reduce((a,r)=>a+parseFloat(r[7]||0),0)/GOOGLE_PERIODO.length;
+        if(rMeta>rGoog+1) insights.push({ico:'💡',txt:`Cross-canal: Meta está com ROAS ${(rMeta-rGoog).toFixed(2)} pontos acima do Google. Pode valer migrar parte do budget do Google para Meta.`});
+        else if(rGoog>rMeta+1) insights.push({ico:'💡',txt:`Cross-canal: Google está com ROAS ${(rGoog-rMeta).toFixed(2)} pontos acima do Meta. Avaliar aumentar investimento no Google.`});
+    }
+
+    if(insights.length===0) insights.push({ico:'✅',txt:'Nenhum alerta crítico identificado nos dados do período. Tudo parece dentro dos parâmetros normais.'});
+
+    var lista=document.getElementById('insights-lista');
+    lista.innerHTML=insights.map(function(ins){
+        return `<div class="insight-item"><span class="insight-ico">${ins.ico}</span><span>${ins.txt}</span></div>`;
+    }).join('');
+}
+
+// ── COMPARATIVO ────────────────────────────────────────────────────
+function gerarComparativo(){
+    var html='';
+    if(META_PERIODO.length>0){
+        var n=META_PERIODO.length;
+        var roas=(META_PERIODO.reduce((a,r)=>a+parseFloat(r[6]||0),0)/n).toFixed(2);
+        var ctr=(META_PERIODO.reduce((a,r)=>a+parseFloat(r[5]||0),0)/n).toFixed(2);
+        var conv=META_PERIODO.reduce((a,r)=>a+parseInt(r[9]||0),0);
+        var cpa=(META_PERIODO.reduce((a,r)=>a+parseFloat(r[7]||0),0)/n).toFixed(2);
+        html+=`<div class="comp-item">
+            <div class="comp-canal meta">📘 Meta Ads (${n} semana${n>1?'s':''})</div>
+            <div class="comp-metrica"><span class="comp-label">ROAS médio</span><span class="comp-val" style="color:${parseFloat(roas)>=3?'#22c55e':parseFloat(roas)>=1.5?'#fbbf24':'#f87171'}">${roas}</span></div>
+            <div class="comp-metrica"><span class="comp-label">CTR% médio</span><span class="comp-val">${ctr}%</span></div>
+            <div class="comp-metrica"><span class="comp-label">CPA médio</span><span class="comp-val">R$ ${cpa}</span></div>
+            <div class="comp-metrica"><span class="comp-label">Conv. totais</span><span class="comp-val" style="color:#22c55e">${conv}</span></div>
+        </div>`;
+    }
+    if(GOOGLE_PERIODO.length>0){
+        var n=GOOGLE_PERIODO.length;
+        var roas=(GOOGLE_PERIODO.reduce((a,r)=>a+parseFloat(r[7]||0),0)/n).toFixed(2);
+        var ctr=(GOOGLE_PERIODO.reduce((a,r)=>a+parseFloat(r[4]||0),0)/n).toFixed(2);
+        var conv=GOOGLE_PERIODO.reduce((a,r)=>a+parseInt(r[8]||0),0);
+        var parc=(GOOGLE_PERIODO.reduce((a,r)=>a+parseFloat(r[9]||0),0)/n).toFixed(0);
+        html+=`<div class="comp-item">
+            <div class="comp-canal google">🔍 Google Ads (${n} semana${n>1?'s':''})</div>
+            <div class="comp-metrica"><span class="comp-label">ROAS médio</span><span class="comp-val" style="color:${parseFloat(roas)>=4?'#22c55e':parseFloat(roas)>=2?'#fbbf24':'#f87171'}">${roas}</span></div>
+            <div class="comp-metrica"><span class="comp-label">CTR% médio</span><span class="comp-val">${ctr}%</span></div>
+            <div class="comp-metrica"><span class="comp-label">Parcela imp.</span><span class="comp-val">${parc}%</span></div>
+            <div class="comp-metrica"><span class="comp-label">Conv. totais</span><span class="comp-val" style="color:#22c55e">${conv}</span></div>
+        </div>`;
+    }
+    if(REELS_PERIODO.length>0){
+        var n=REELS_PERIODO.length;
+        var validos=REELS_PERIODO.filter(r=>parseFloat(r[5])<=100);
+        var ret=validos.length>0?(validos.reduce((a,r)=>a+parseFloat(r[5]||0),0)/validos.length).toFixed(1):'N/A';
+        var views=REELS_PERIODO.reduce((a,r)=>a+(parseInt(r[4])||0),0);
+        var salv=REELS_PERIODO.reduce((a,r)=>a+(parseInt(r[10])||0),0);
+        html+=`<div class="comp-item">
+            <div class="comp-canal reels">🎬 Reels (${n} vídeo${n>1?'s':''})</div>
+            <div class="comp-metrica"><span class="comp-label">Retenção média</span><span class="comp-val" style="color:${parseFloat(ret)>=40?'#22c55e':parseFloat(ret)>=25?'#fbbf24':'#f87171'}">${ret}%</span></div>
+            <div class="comp-metrica"><span class="comp-label">Views totais</span><span class="comp-val">${views.toLocaleString('pt-BR')}</span></div>
+            <div class="comp-metrica"><span class="comp-label">Salvamentos</span><span class="comp-val">${salv}</span></div>
+        </div>`;
+    }
+    if(!html) html='<div style="color:#334155;font-size:13px;text-align:center;grid-column:1/-1;padding:16px;">Sem dados no período.</div>';
+    document.getElementById('comp-grid').innerHTML=html;
+}
+
+// ── PROMPTS IA ─────────────────────────────────────────────────────
+var PROMPT_TIPO_ATUAL='diagnostico';
+
+function gerarDadosBase(){
+    var partes=[];
+    partes.push("Cliente: "+CLIENTE_NOME+" | Segmento: "+CLIENTE_SEG+" | Período: "+PERIODO_ATUAL+" ("+TIPO_PERIODO+")");
+    if(META_PERIODO.length>0){
+        var n=META_PERIODO.length;
+        var roas=(META_PERIODO.reduce((a,r)=>a+parseFloat(r[6]||0),0)/n).toFixed(2);
+        var ctr=(META_PERIODO.reduce((a,r)=>a+parseFloat(r[5]||0),0)/n).toFixed(2);
+        var conv=META_PERIODO.reduce((a,r)=>a+parseInt(r[9]||0),0);
+        var freq=(META_PERIODO.reduce((a,r)=>a+parseFloat(r[8]||0),0)/n).toFixed(2);
+        var cpa=(META_PERIODO.reduce((a,r)=>a+parseFloat(r[7]||0),0)/n).toFixed(2);
+        partes.push("\nMETA ADS ("+n+" semana(s)):\n- ROAS médio: "+roas+"\n- CTR médio: "+ctr+"%\n- CPA médio: R$"+cpa+"\n- Frequência média: "+freq+"\n- Total conversões: "+conv);
+    }
+    if(GOOGLE_PERIODO.length>0){
+        var n=GOOGLE_PERIODO.length;
+        var roas=(GOOGLE_PERIODO.reduce((a,r)=>a+parseFloat(r[7]||0),0)/n).toFixed(2);
+        var ctr=(GOOGLE_PERIODO.reduce((a,r)=>a+parseFloat(r[4]||0),0)/n).toFixed(2);
+        var conv=GOOGLE_PERIODO.reduce((a,r)=>a+parseInt(r[8]||0),0);
+        var parc=(GOOGLE_PERIODO.reduce((a,r)=>a+parseFloat(r[9]||0),0)/n).toFixed(1);
+        var cpa=(GOOGLE_PERIODO.reduce((a,r)=>a+parseFloat(r[6]||0),0)/n).toFixed(2);
+        partes.push("\nGOOGLE ADS ("+n+" semana(s)):\n- ROAS médio: "+roas+"\n- CTR médio: "+ctr+"%\n- CPA médio: R$"+cpa+"\n- Parcela de impressão média: "+parc+"%\n- Total conversões: "+conv);
+    }
+    if(REELS_PERIODO.length>0){
+        var n=REELS_PERIODO.length;
+        var viewsTotal=REELS_PERIODO.reduce((a,r)=>a+(parseFloat(r[4])||0),0);
+        var retVals=REELS_PERIODO.filter(r=>!isNaN(parseFloat(r[5]))&&parseFloat(r[5])<=100);
+        var ret=retVals.length>0?(retVals.reduce((a,r)=>a+parseFloat(r[5]),0)/retVals.length).toFixed(1):'N/A';
+        var salv=REELS_PERIODO.reduce((a,r)=>a+(parseInt(r[10])||0),0);
+        var retAlert=REELS_PERIODO.some(r=>!isNaN(parseFloat(r[5]))&&parseFloat(r[5])>100)?'\n  ATENCAO: valor de retencao acima de 100% detectado — ignorado na media.':'';
+        partes.push("\nINSTAGRAM REELS ("+n+" video(s)):"+retAlert+"\n- Retencao media: "+ret+"%\n- Total de views: "+viewsTotal+"\n- Total de salvamentos: "+salv);
+    }
+    return partes.join("\n");
+}
+
+var PROMPTS={
+    diagnostico:function(){return "Voce e um especialista senior em trafego pago e marketing digital orientado a performance.\n\nAnalise os dados abaixo e gere uma resposta estrategica, profunda e acionavel.\n\nOBJETIVO: Transformar os dados em diagnostico real, identificacao de gargalos e decisoes claras (escalar, corrigir ou testar).\n\nO QUE ENTREGAR:\n1. DIAGNOSTICO detalhado por canal (Reels, Meta Ads, Google Ads)\n2. PONTOS CRITICOS (problemas prioritarios)\n3. PONTOS POSITIVOS (o que esta funcionando)\n4. OPORTUNIDADES de melhoria\n5. RECOMENDACOES PRATICAS: o que escalar / ajustar / testar\n\nREGRAS:\n- NAO descreva metricas, INTERPRETE\n- Cruze dados entre canais\n- Classifique: conteudo (fraco/promissor/escalavel) e campanhas (prejuizo/neutro/lucrativo)\n- Se dados inconsistentes (NaN, retencao >100%): sinalize e continue com o possivel\n\n--- DADOS ---\n"+gerarDadosBase();},
+    gestor:function(){return "Voce e um especialista senior em trafego pago e marketing digital.\n\nCom base nos dados abaixo, crie um PLANO DE ACAO PRATICO E PRIORITIZADO para o gestor.\n\nENTREGUE:\n1. Lista de 5 a 8 ACOES PRIORITARIAS numeradas (mais urgente primeiro)\n2. Para cada acao: O QUE fazer + POR QUE + RESULTADO ESPERADO\n3. Classifique: [URGENTE] / [ESTA SEMANA] / [PROXIMA SEMANA]\n4. 1 insight que o gestor provavelmente nao percebeu\n\nREGRAS:\n- Direto e especifico — use os numeros reais\n- Priorize impacto no menor tempo\n\n--- DADOS ---\n"+gerarDadosBase();},
+    cliente:function(){return "Voce e um especialista em marketing digital.\n\nEscreva um RELATORIO EXECUTIVO para enviar ao cliente. Tom: profissional, positivo e claro.\n\nESTRUTURA:\n1. RESUMO DOS RESULTADOS (panorama geral em 2-3 frases)\n2. DESTAQUES DO PERIODO (o que performou bem e por que)\n3. PONTOS DE ATENCAO (construtivo, sem alarmismo)\n4. PROXIMOS PASSOS\n\nREGRAS:\n- Linguagem acessivel — cliente NAO e especialista\n- Maximo 4 paragrafos curtos\n\n--- DADOS ---\n"+gerarDadosBase();}
+};
+var PROMPT_LABELS={diagnostico:'Diagnostico por canal',gestor:'Plano de acao para o gestor',cliente:'Relatorio para o cliente'};
+
+function trocarPromptTab(e,tipo){
+    document.querySelectorAll('.ia-tabs .ia-tab').forEach(t=>t.classList.remove('ativo'));
+    e.target.classList.add('ativo');
+    PROMPT_TIPO_ATUAL=tipo;
+    document.getElementById('prompt-tab-label').textContent=PROMPT_LABELS[tipo];
+    document.getElementById('bi-prompt-preview').textContent=PROMPTS[tipo]();
+}
+function copiarPromptBI(){
+    navigator.clipboard.writeText(PROMPTS[PROMPT_TIPO_ATUAL]()).then(()=>{
+        var m=document.getElementById('copiado-bi-msg');
+        m.style.display='block'; setTimeout(()=>m.style.display='none',3000);
+    });
+}
+function abrirChatGPTBI(){
+    navigator.clipboard.writeText(PROMPTS[PROMPT_TIPO_ATUAL]()).then(()=>{
+        document.getElementById('copiado-bi-msg').style.display='block';
+        window.open('https://chat.openai.com','_blank');
+    });
+}
+
+// ── PDF CORRIGIDO ──────────────────────────────────────────────────
+// BUG ORIGINAL: tentava acessar 'ia-diagnostico' que nao existe.
+// CORRIGIDO: apenas abre todos os panes de dados e printa.
+function exportarPDF(){
+    // Abrir todos os ia-pane para aparecer no PDF
+    document.querySelectorAll('.ia-pane').forEach(function(p){
+        p.style.display='block';
+    });
+    setTimeout(function(){
+        window.print();
+        // Restaurar depois da impressao
+        setTimeout(function(){
+            document.querySelectorAll('.ia-pane').forEach(function(p){
+                p.style.display='none';
+            });
+            document.querySelectorAll('.ia-pane.ativo').forEach(function(p){
+                p.style.display='block';
+            });
+            // Garantir que o primeiro pane de cada card esteja ativo
+            document.getElementById('dmeta').classList.add('ativo');
+            document.getElementById('dmeta').style.display='block';
+            document.getElementById('tab-dmeta').classList.add('ativo');
+        },500);
+    },300);
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+    document.getElementById('btn-'+TIPO_PERIODO).classList.add('ativo');
+    initCharts();
+    gerarInsights();
+    gerarComparativo();
+    document.getElementById('bi-prompt-preview').textContent=PROMPTS['diagnostico']();
+});
+</script>
+</body>
+</html>

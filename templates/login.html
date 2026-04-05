@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login &#8212; Amigo Gestor</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f, #0a0f1e);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 { color: white; font-size: 26px; margin-bottom: 6px; }
+        .subtitulo { color: #94a3b8; font-size: 14px; margin-bottom: 30px; text-align: center; }
+        .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 14px; padding: 30px; width: 100%; max-width: 360px; }
+        label { font-size: 13px; color: #64748b; display: block; margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-top: 14px; }
+        label:first-of-type { margin-top: 0; }
+        .input-wrap { position: relative; }
+        input { width: 100%; padding: 12px 14px; border: 1px solid #1e293b; border-radius: 9px; font-size: 15px; background: #0a0f1e; color: white; transition: border-color .15s; }
+        input[type=password], input[type=text] { padding-right: 44px; }
+        input:focus { outline: none; border-color: #2d5a9e; }
+        .olho { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #475569; cursor: pointer; font-size: 16px; padding: 4px; line-height: 1; }
+        .olho:hover { color: #94a3b8; }
+        .btn-entrar { width: 100%; padding: 13px; background: #1e3a5f; color: #93c5fd; border: 1px solid #2d5a9e; border-radius: 9px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: all .15s; }
+        .btn-entrar:hover { background: #1e40af; color: white; }
+        .alerta { border-radius: 9px; padding: 10px 14px; font-size: 13px; margin-bottom: 16px; }
+        .alerta.erro { background: #450a0a; color: #fca5a5; border: 1px solid #7f1d1d; }
+        .alerta.ok { background: #052e16; color: #4ade80; border: 1px solid #14532d; }
+        .divisor { border: none; border-top: 1px solid #1e293b; margin: 16px 0; }
+        .rodape { text-align: center; margin-top: 20px; font-size: 13px; color: #475569; }
+        .rodape a { color: #93c5fd; text-decoration: none; }
+        .esqueci { display: block; text-align: right; font-size: 12px; color: #475569; margin-top: 6px; text-decoration: none; }
+        .esqueci:hover { color: #93c5fd; }
+        @media (max-width: 400px) { .card { padding: 24px 18px; } }
+    </style>
+</head>
+<body>
+    <div id="loader" style="position:fixed;inset:0;z-index:9999;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s ease;">
+        <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">📊</span><span style="font-size:20px;font-weight:700;color:white;">Amigo Gestor</span></div>
+        <div style="width:160px;height:3px;background:#1e293b;border-radius:99px;overflow:hidden;"><div id="lbar" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:99px;transition:width .5s;"></div></div>
+        <span style="font-size:12px;color:#475569;" id="ltxt">Carregando...</span>
+    </div>
+    <h1>&#128202; Amigo Gestor</h1>
+    <p class="subtitulo">Sua central de performance</p>
+
+    <div class="card">
+        {% if aviso %}
+        <div class="alerta ok">&#9989; {% if aviso == 'senha_redefinida' %}Senha redefinida com sucesso!{% else %}Conta criada! Fa&#231;a login.{% endif %}</div>
+        {% endif %}
+        {% if erro %}<div class="alerta erro">&#9888;&#65039; {{ erro }}</div>{% endif %}
+
+        <form method="POST" action="/login">
+            <label>E-mail</label>
+            <input type="email" name="email" placeholder="voce@email.com" required autocomplete="email" autofocus>
+
+            <label>Senha</label>
+            <div class="input-wrap">
+                <input type="password" name="senha" id="senha-inp" placeholder="Sua senha" required autocomplete="current-password">
+                <button type="button" class="olho" onclick="toggleSenha()" id="olho-btn" title="Ver senha">&#128065;&#65039;</button>
+            </div>
+            <a class="esqueci" href="/esqueci-senha">Esqueci minha senha</a>
+
+            <hr class="divisor">
+            <button type="submit" class="btn-entrar">Entrar &#8594;</button>
+        </form>
+    </div>
+
+    <div class="rodape">N&#227;o tem conta? <a href="/cadastro">Cadastre-se</a></div>
+
+    <script>
+    function toggleSenha() {
+        var inp = document.getElementById('senha-inp');
+        var btn = document.getElementById('olho-btn');
+        if (inp.type === 'password') {
+            inp.type = 'text';
+            btn.innerHTML = '&#128584;';
+        } else {
+            inp.type = 'password';
+            btn.innerHTML = '&#128065;&#65039;';
+        }
+    }
+    </script>
+    <script>
+    (function(){
+        var b=document.getElementById('lbar'),t=document.getElementById('ltxt'),l=document.getElementById('loader'),p=0;
+        var iv=setInterval(function(){p=Math.min(p+Math.random()*20+5,88);b.style.width=p+'%';},200);
+        window.addEventListener('load',function(){clearInterval(iv);b.style.width='100%';t.textContent='Pronto!';setTimeout(function(){l.style.opacity='0';setTimeout(function(){l.style.display='none';},400);},200);});
+        document.querySelectorAll('a[href],button[type=submit]').forEach(function(el){el.addEventListener('click',function(){l.style.display='flex';l.style.opacity='1';b.style.width='0%';p=0;setInterval(function(){p=Math.min(p+20,85);b.style.width=p+'%';},150);});});
+    })();
+    </script>
+</body>
+</html>
